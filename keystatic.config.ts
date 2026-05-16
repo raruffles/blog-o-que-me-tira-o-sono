@@ -12,6 +12,37 @@ const generateSlug = (name: string) =>
 export default config({
   storage: { kind: 'local' },
   collections: {
+    categories: collection({
+      label: 'Categorias',
+      path: 'src/content/categories/*',
+      slugField: 'slug',
+      format: 'json',
+      schema: {
+        title: fields.text({
+          label: 'Nome',
+          validation: {
+            isRequired: true,
+            length: { max: 32 },
+          },
+        }),
+        slug: fields.slug({
+          name: {
+            label: 'Nome',
+          },
+          slug: {
+            label: 'Slug',
+            generate: generateSlug,
+          },
+        }),
+        description: fields.text({
+          label: 'Descrição',
+          multiline: true,
+          validation: {
+            length: { max: 160 },
+          },
+        }),
+      },
+    }),
     blog: collection({
       label: 'Postagens do Blog',
       path: 'src/content/blog/*',
@@ -49,6 +80,18 @@ export default config({
           directory: 'public/images/blog',
           publicPath: '/images/blog',
         }),
+        categories: fields.array(
+          fields.relationship({
+            label: 'Categoria',
+            collection: 'categories',
+          }),
+          {
+            label: 'Categorias',
+            validation: {
+              length: { min: 1 },
+            },
+          },
+        ),
         content: fields.array(fields.text({ label: 'Parágrafo', multiline: true }), {
           label: 'Parágrafos',
           validation: {

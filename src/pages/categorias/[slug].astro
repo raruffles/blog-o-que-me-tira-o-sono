@@ -1,0 +1,26 @@
+---
+import PostGrid from '../../components/blog/PostGrid.jsx';
+import { getBlogPosts, paginatePosts, POSTS_PER_PAGE } from '../../lib/blog.ts';
+
+const slug = Astro.params.slug;
+const page = Number(Astro.url.searchParams.get('page') ?? '1');
+
+const allPosts = await getBlogPosts();
+const filtered = allPosts.filter((p) => p.categories?.some((c) => c.slug === slug));
+const { items: posts, currentPage, totalPages } = paginatePosts(filtered, page, POSTS_PER_PAGE);
+const category = (await (await import(`../../lib/blog.ts`)).getBlogCategories()).find((c) => c.slug === slug) || { title: slug };
+---
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{category.title} | Categorias | O que me tira o sono</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main class="page-shell" style="max-width:900px;margin:48px auto;padding:0 20px;">
+      <h1>{category.title}</h1>
+      <PostGrid posts={posts} pagination={{ currentPage, totalPages }} />
+    </main>
+  </body>
+</html>

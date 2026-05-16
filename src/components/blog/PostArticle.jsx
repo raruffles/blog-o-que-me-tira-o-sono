@@ -8,10 +8,38 @@ const formatDate = (pubDate) =>
     : '';
 
 export default function PostArticle({ post }) {
+  const categoryItems = post.categories ?? [];
+
   return (
     <>
       <section className="post-hero">
         <div className="post-intro">
+          {categoryItems.length ? (
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px' }}>
+              {categoryItems.map((category) => (
+                <span
+                  key={category.slug}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    padding: '4px 10px',
+                    border: '1px solid rgba(0, 0, 0, 0.12)',
+                    borderRadius: '999px',
+                    fontSize: '12px',
+                    lineHeight: 1,
+                    letterSpacing: '0.02em',
+                    textTransform: 'uppercase',
+                    color: '#000000',
+                    background: '#ffffff',
+                    marginBottom: '4px',
+                  }}
+                >
+                  {category.title}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
           <h1>{post.title}</h1>
           <time className="reading-time" dateTime={post.pubDate}>
             {formatDate(post.pubDate)}

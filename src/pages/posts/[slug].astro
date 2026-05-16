@@ -1,6 +1,7 @@
 ---
 import logo from '../../logo.png';
 import PostArticle from '../../components/blog/PostArticle.jsx';
+import { getBlogCategories, getBlogPosts, getCategoryHref } from '../../lib/blog.ts';
 import { keystaticReader } from '../../lib/keystatic.ts';
 
 export const prerender = true;
@@ -13,13 +14,19 @@ export async function getStaticPaths() {
   }));
 }
 
-const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slug);
+const [posts, categories] = await Promise.all([getBlogPosts(), getBlogCategories()]);
+const post = posts.find((entry) => entry.slug === Astro.params.slug);
+
+if (!post) {
+  throw new Error(`Post not found: ${Astro.params.slug}`);
+}
 ---
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{post.title} | O que me tira o sono</title>
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -47,6 +54,7 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
         <a href="/">Home</a>
         <a href="/#about">Sobre o blog</a>
         <a href="/#contact">Contato</a>
+        <a href="/categorias">Categorias</a>
       </nav>
     </header>
 
@@ -148,7 +156,7 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
       }
 
       .brand {
-        justify-self: center;
+        justify-self: start;
         display: inline-flex;
         width: fit-content;
       }
@@ -239,6 +247,14 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
 
       .site-nav a:hover {
         color: #000000;
+      }
+
+      .menu-section {
+        margin-top: 10px;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #5f6268;
       }
 
       .post-page {

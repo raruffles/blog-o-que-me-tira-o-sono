@@ -1,0 +1,22 @@
+---
+import PostGrid from '../../components/blog/PostGrid.jsx';
+import { getBlogPosts, paginatePosts, POSTS_PER_PAGE } from '../../lib/blog.ts';
+
+const pageNum = Number(Astro.params.n ?? '1');
+const allPosts = await getBlogPosts();
+const { items: posts, currentPage, totalPages } = paginatePosts(allPosts, pageNum, POSTS_PER_PAGE);
+---
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Página {currentPage} | O que me tira o sono</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main class="page-shell" style="max-width:900px;margin:48px auto;padding:0 20px;">
+      <h1>Arquivos — Página {currentPage}</h1>
+      <PostGrid posts={posts} pagination={{ currentPage, totalPages }} />
+    </main>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+---
+import { getBlogCategories } from '../lib/blog.ts';
+
+const categories = await getBlogCategories();
+---
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Categorias | O que me tira o sono</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main style="max-width:900px;margin:48px auto;padding:0 20px;">
+      <h1>Categorias</h1>
+      <ul style="list-style:none;padding:0;margin-top:20px;display:flex;flex-direction:column;gap:12px;">
+        {categories.map((cat) => (
+          <li key={cat.slug}>
+            <a href={`/categorias/${cat.slug}`} style="display:inline-block;padding:12px 16px;border:1px solid rgba(0,0,0,0.12);text-decoration:none;color:#000;">
+              {cat.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </main>
+  </body>
+</html>
