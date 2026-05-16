@@ -1,14 +1,19 @@
 ---
-import { posts } from '../../data/posts.js';
+import logo from '../../logo.png';
+import PostArticle from '../../components/blog/PostArticle.jsx';
+import { keystaticReader } from '../../lib/keystatic.ts';
 
-export function getStaticPaths() {
-  return Object.entries(posts).map(([slug, post]) => ({
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const slugs = await keystaticReader.collections.posts.list();
+
+  return slugs.map((slug) => ({
     params: { slug },
-    props: { post },
   }));
 }
 
-const { post } = Astro.props;
+const post = await keystaticReader.collections.posts.readOrThrow(Astro.params.slug);
 ---
 <html lang="pt-BR" data-theme="light">
   <head>
@@ -22,9 +27,7 @@ const { post } = Astro.props;
   <body>
     <header class="site-header">
       <a class="brand" href="/" aria-label="O que me tira o sono | P.H">
-        <span class="brand-mark">O que me tira o sono</span>
-        <span class="brand-divider" aria-hidden="true"></span>
-        <span class="brand-signature">P.H</span>
+        <img src={logo.src} alt="O que me tira o sono | P.H" />
       </a>
 
       <div class="header-actions">
@@ -51,19 +54,7 @@ const { post } = Astro.props;
     </header>
 
     <main class="post-page">
-      <section class="post-hero">
-        <div class="post-intro">
-          <span class="post-kicker">Crônica</span>
-          <h1>{post.title}</h1>
-          <p class="reading-time">{post.readTime}</p>
-        </div>
-
-        <div class={`post-visual ${post.color}`} aria-hidden="true"></div>
-      </section>
-
-      <article class="post-body">
-        {post.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
-      </article>
+      <PostArticle post={post} />
     </main>
 
     <script is:inline>
@@ -142,10 +133,7 @@ const { post } = Astro.props;
         line-height: 1.5;
       }
 
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
+      a { color: inherit; text-decoration: none; }
 
       .sr-only {
         position: absolute;
@@ -167,45 +155,16 @@ const { post } = Astro.props;
         grid-template-columns: auto 1fr auto;
         align-items: center;
         gap: 20px;
-        padding: 22px clamp(22px, 3.5vw, 42px);
-        background: color-mix(in srgb, var(--bg) 92%, transparent);
-        border-bottom: 1px solid var(--line);
-        backdrop-filter: blur(16px);
+        height: 60px;
+        padding: 0 clamp(18px, 3vw, 32px);
+        background: var(--bg);
       }
 
-      .brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 18px;
-        min-width: 0;
-      }
+      .brand { display: inline-flex; width: fit-content; }
 
-      .brand-mark,
-      .brand-signature,
-      .post-kicker,
-      .section-label,
-      .site-nav a {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 300;
-        letter-spacing: 0.06em;
-      }
-
-      .brand-mark {
-        font-size: 1.95rem;
-        line-height: 1.5;
-        text-transform: uppercase;
-      }
-
-      .brand-divider {
-        width: 1px;
-        height: 54px;
-        background: var(--line);
-      }
-
-      .brand-signature {
-        font-size: 1.95rem;
-        line-height: 1.5;
-        text-transform: uppercase;
+      .brand img {
+        height: 48px;
+        width: auto;
       }
 
       .header-actions {
@@ -229,53 +188,32 @@ const { post } = Astro.props;
       }
 
       .theme-toggle {
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 6px 10px 6px 6px;
-        background: var(--panel);
+        padding: 0;
       }
 
       .theme-toggle-label {
-        font-size: 0.84rem;
-        font-weight: 500;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
+        font-size: 18px;
+        font-weight: 300;
       }
 
       .theme-toggle-track {
-        position: relative;
-        width: 46px;
-        height: 26px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: var(--accent-soft);
-        padding: 2px;
+        display: none;
       }
 
       .theme-toggle-thumb {
-        display: block;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--accent);
-        transform: translateX(0);
-        transition: transform 0.25s ease;
-      }
-
-      html[data-theme='dark'] .theme-toggle-thumb {
-        transform: translateX(20px);
+        display: none;
       }
 
       .menu-toggle {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         justify-content: center;
         flex-direction: column;
         gap: 5px;
       }
 
       .menu-toggle span:not(.sr-only) {
-        width: 28px;
+        width: 26px;
         height: 2px;
         background: var(--text);
         display: block;
@@ -287,15 +225,20 @@ const { post } = Astro.props;
         flex-direction: column;
         gap: 0;
         margin-top: 8px;
+        background: var(--bg);
       }
 
       .site-nav.open { display: flex; }
 
       .site-nav a {
         padding: 14px 0;
-        border-top: 1px solid var(--line);
-        font-size: 0.98rem;
-        text-transform: uppercase;
+        font-size: 18px;
+        font-weight: 300;
+        color: #000000;
+      }
+
+      .site-nav a:hover {
+        color: #6b7280;
       }
 
       .post-page {
@@ -320,9 +263,11 @@ const { post } = Astro.props;
       }
 
       .post-kicker {
+        margin: 0;
         font-size: 0.82rem;
         color: var(--muted);
         text-transform: uppercase;
+        letter-spacing: 0.24em;
       }
 
       .post-intro h1 {
@@ -338,14 +283,13 @@ const { post } = Astro.props;
 
       .reading-time {
         margin: 18px 0 0;
-        font-size: 0.92rem;
         color: var(--muted);
       }
 
       .post-visual {
         min-height: 420px;
-        border: 1px solid var(--line);
-        box-shadow: var(--shadow);
+        border: 0;
+        box-shadow: none;
       }
 
       .tone-forest {
@@ -380,7 +324,7 @@ const { post } = Astro.props;
 
       .post-body p {
         margin: 0;
-        font-size: 1.125rem;
+        font-size: 18px;
         line-height: 1.5;
         color: var(--muted);
       }
@@ -401,50 +345,30 @@ const { post } = Astro.props;
 
         .site-nav {
           position: absolute;
-          right: clamp(22px, 3.5vw, 42px);
+          right: clamp(18px, 3vw, 32px);
           top: calc(100% + 1px);
           min-width: 260px;
           padding: 12px 0;
-          border: 1px solid var(--line);
-          background: var(--bg);
-          box-shadow: var(--shadow);
         }
 
         .site-nav a {
           padding: 14px 18px;
-          border-top: 0;
-          border-bottom: 1px solid var(--line);
         }
-
-        .site-nav a:last-child { border-bottom: 0; }
       }
 
       @media (max-width: 899px) {
-        .site-header {
-          grid-template-columns: auto 1fr auto;
-        }
+        .theme-toggle-label { display: inline; }
+      }
 
-        .brand {
-          gap: 12px;
-        }
+      body {
+        font-size: 18px;
+      }
 
-        .brand-mark,
-        .brand-signature {
-          font-size: 1.1rem;
-          line-height: 1.5;
-        }
-
-        .brand-divider {
-          height: 42px;
-        }
-
-        .theme-toggle-label {
-          display: none;
-        }
-
-        .post-visual {
-          min-height: 320px;
-        }
+      p,
+      li,
+      .post-body p,
+      .reading-time {
+        font-size: 18px;
       }
     </style>
   </body>

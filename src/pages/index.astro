@@ -1,6 +1,12 @@
 ---
 import logo from '../logo.png';
-import { postList } from '../data/posts.js';
+import PostGrid from '../components/blog/PostGrid.jsx';
+import { keystaticReader } from '../lib/keystatic.ts';
+
+const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry }) => ({
+  slug,
+  ...entry,
+}));
 ---
 <html lang="pt-BR" data-theme="light">
   <head>
@@ -19,10 +25,7 @@ import { postList } from '../data/posts.js';
       </a>
 
       <div class="header-actions">
-        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Alternar para modo escuro" data-theme-toggle>
-          <span class="theme-toggle-track" aria-hidden="true">
-            <span class="theme-toggle-thumb"></span>
-          </span>
+        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Alternar tema" data-theme-toggle>
           <span class="theme-toggle-label">Normal</span>
         </button>
 
@@ -43,80 +46,7 @@ import { postList } from '../data/posts.js';
 
     <main class="page-shell" id="home">
       <section class="home-layout">
-        <div class="post-grid">
-          <article class="featured-card featured-card-large">
-            <a href={`/posts/${postList[0].slug}`} class="card-link">
-              <div class={`post-visual ${postList[0].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h1 class="post-title">{postList[0].title}</h1>
-                <p class="post-meta">{postList[0].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <article class="featured-card">
-            <a href={`/posts/${postList[1].slug}`} class="card-link">
-              <div class={`post-visual ${postList[1].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h2 class="post-title">{postList[1].title}</h2>
-                <p class="post-meta">{postList[1].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <article class="sidebar-card search-card">
-            <label class="search-field">
-              <span class="search-icon" aria-hidden="true">⌕</span>
-              <input type="search" placeholder="Pesquisar..." aria-label="Pesquisar posts" />
-            </label>
-          </article>
-
-          <article class="featured-card">
-            <a href={`/posts/${postList[2].slug}`} class="card-link">
-              <div class={`post-visual ${postList[2].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h2 class="post-title">{postList[2].title}</h2>
-                <p class="post-meta">{postList[2].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <article class="featured-card">
-            <a href={`/posts/${postList[3].slug}`} class="card-link">
-              <div class={`post-visual ${postList[3].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h2 class="post-title">{postList[3].title}</h2>
-                <p class="post-meta">{postList[3].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <aside class="sidebar-card promo-card">
-            <div class="promo-box">
-              <p class="promo-title">do depois</p>
-              <p class="promo-text">Crônicas escritas depois do dia, para ler com calma e sem pressa.</p>
-            </div>
-            <a class="promo-button" href="#contact">Quero ler o que vem depois!</a>
-          </aside>
-        </div>
-
-        <section class="about-strip" id="about">
-          <div>
-            <span class="section-label">Sobre o blog</span>
-            <h2>Escrita fina, silenciosa e centrada</h2>
-          </div>
-          <p>
-            Montserrat conduz o texto com 150% de altura de linha, enquanto os títulos usam Dosis em peso leve e tamanho limitado para manter a leitura limpa.
-          </p>
-        </section>
-
-        <section class="contact-strip" id="contact">
-          <div>
-            <span class="section-label">Contato</span>
-            <h2>Fale comigo por aqui</h2>
-          </div>
-          <a href="mailto:oi@oque-me-tira-o-sono.com">oi@oque-me-tira-o-sono.com</a>
-        </section>
+        <PostGrid posts={posts} />
       </section>
     </main>
 
@@ -130,7 +60,6 @@ import { postList } from '../data/posts.js';
         root.dataset.theme = theme;
         const isDark = theme === 'dark';
         themeToggle.setAttribute('aria-pressed', String(isDark));
-        themeToggle.setAttribute('aria-label', isDark ? 'Alternar para modo normal' : 'Alternar para modo escuro');
         themeToggle.querySelector('.theme-toggle-label').textContent = isDark ? 'Dark' : 'Normal';
       };
 
@@ -192,6 +121,7 @@ import { postList } from '../data/posts.js';
         background: var(--bg);
         color: var(--text);
         font-family: 'Montserrat', sans-serif;
+        font-size: 18px;
         font-weight: 300;
         line-height: 1.5;
       }
@@ -199,6 +129,11 @@ import { postList } from '../data/posts.js';
       a {
         color: inherit;
         text-decoration: none;
+      }
+
+      p,
+      li {
+        font-size: 18px;
       }
 
       img { display: block; max-width: 100%; }
@@ -222,21 +157,17 @@ import { postList } from '../data/posts.js';
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: 20px;
-        padding: 22px clamp(22px, 3.5vw, 42px);
-        background: color-mix(in srgb, var(--bg) 92%, transparent);
-        border-bottom: 1px solid var(--line);
-        backdrop-filter: blur(16px);
+        gap: 16px;
+        height: 64px;
+        padding: 8px clamp(18px, 3vw, 32px);
+        background: var(--bg);
       }
 
-      .brand {
-        display: inline-flex;
-        width: fit-content;
-      }
+      .brand { display: inline-flex; width: fit-content; }
 
       .brand img {
-        width: clamp(220px, 22vw, 330px);
-        height: auto;
+        height: 48px;
+        width: auto;
       }
 
       .header-actions {
@@ -259,47 +190,14 @@ import { postList } from '../data/posts.js';
         cursor: pointer;
       }
 
-      .theme-toggle {
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        padding: 6px 10px 6px 6px;
-        background: var(--panel);
-      }
-
       .theme-toggle-label {
-        font-size: 0.84rem;
-        font-weight: 500;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .theme-toggle-track {
-        position: relative;
-        width: 46px;
-        height: 26px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: var(--accent-soft);
-        padding: 2px;
-      }
-
-      .theme-toggle-thumb {
-        display: block;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--accent);
-        transform: translateX(0);
-        transition: transform 0.25s ease;
-      }
-
-      html[data-theme='dark'] .theme-toggle-thumb {
-        transform: translateX(20px);
+        font-size: 18px;
+        font-weight: 300;
       }
 
       .menu-toggle {
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
         justify-content: center;
         flex-direction: column;
         gap: 5px;
@@ -318,21 +216,24 @@ import { postList } from '../data/posts.js';
         flex-direction: column;
         gap: 0;
         margin-top: 8px;
+        background: var(--bg);
       }
 
       .site-nav.open { display: flex; }
 
       .site-nav a {
         padding: 14px 0;
-        border-top: 1px solid var(--line);
-        font-size: 0.98rem;
-        font-weight: 500;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
+        font-size: 18px;
+        font-weight: 300;
+        color: #000000;
+      }
+
+      .site-nav a:hover {
+        color: #6b7280;
       }
 
       .page-shell {
-        padding: clamp(26px, 4vw, 48px);
+        padding: clamp(24px, 4vw, 48px);
       }
 
       .home-layout {
@@ -346,13 +247,8 @@ import { postList } from '../data/posts.js';
         grid-template-columns: 1fr;
       }
 
-      .featured-card,
-      .sidebar-card {
-        min-width: 0;
-      }
-
       .featured-card {
-        background: transparent;
+        min-width: 0;
       }
 
       .card-link {
@@ -362,8 +258,8 @@ import { postList } from '../data/posts.js';
       .post-visual {
         width: 100%;
         aspect-ratio: 4 / 5;
-        border: 1px solid var(--line);
-        box-shadow: var(--shadow);
+        border: 0;
+        box-shadow: none;
       }
 
       .tone-forest {
@@ -391,7 +287,7 @@ import { postList } from '../data/posts.js';
       }
 
       .card-copy {
-        padding: 12px 4px 0;
+        padding: 12px 2px 0;
       }
 
       .post-title {
@@ -407,195 +303,45 @@ import { postList } from '../data/posts.js';
 
       .post-meta {
         margin: 12px 0 0;
-        font-size: 0.9rem;
-        font-weight: 300;
         color: var(--muted);
       }
 
-      .search-card,
-      .promo-card,
-      .about-strip,
-      .contact-strip {
-        background: transparent;
-      }
-
-      .search-field {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        border: 1px solid var(--line);
-        background: var(--bg);
-      }
-
-      .search-field input {
-        flex: 1;
-        border: 0;
-        background: transparent;
-        outline: none;
-        font: inherit;
-        font-size: 0.96rem;
-        color: var(--text);
-      }
-
-      .search-icon {
-        font-size: 1.15rem;
-        color: var(--text);
-      }
-
-      .promo-box {
-        min-height: 230px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 14px;
-        padding: 22px;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        text-align: center;
-      }
-
-      .promo-title {
-        margin: 0;
-        font-family: 'Dosis', sans-serif;
-        font-size: clamp(2rem, 3vw, 2.6rem);
-        font-weight: 300;
-        text-transform: lowercase;
-      }
-
-      .promo-text {
-        margin: 0;
-        font-size: 0.95rem;
-        color: var(--muted);
-      }
-
-      .promo-button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 52px;
-        margin-top: 14px;
-        padding: 12px 16px;
-        background: var(--accent);
-        color: var(--bg);
-        font-size: 0.88rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        text-align: center;
-      }
-
-      .about-strip,
-      .contact-strip {
-        margin-top: clamp(42px, 8vw, 72px);
-        display: grid;
-        gap: 18px;
-        align-items: end;
-      }
-
-      .section-label {
-        display: block;
-        margin-bottom: 10px;
-        font-size: 0.8rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .about-strip h2,
-      .contact-strip h2 {
-        margin: 0;
-        font-family: 'Dosis', sans-serif;
-        font-size: clamp(2rem, 3vw, 2.75rem);
-        font-weight: 300;
-        line-height: 1.05;
-        letter-spacing: 0.02em;
-      }
-
-      .about-strip p {
-        margin: 0;
-        max-width: 720px;
-        font-size: 1.125rem;
-        line-height: 1.5;
-        color: var(--muted);
-      }
-
-      .contact-strip a {
-        width: fit-content;
-        padding-bottom: 2px;
-        border-bottom: 1px solid var(--line);
-        font-size: 1.1rem;
+      .featured-card-large .post-title {
+        font-size: clamp(2.25rem, 3vw, 2.5rem);
       }
 
       @media (min-width: 900px) {
         .post-grid {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 260px;
-          grid-auto-flow: dense;
+          grid-template-columns: 1.2fr 1fr 260px;
           align-items: start;
         }
 
-        .featured-card-large {
+        .featured-card:nth-child(1) {
           grid-column: 1;
         }
 
-        .post-grid > article:nth-child(2) {
+        .featured-card:nth-child(2) {
           grid-column: 2;
         }
 
-        .search-card {
-          grid-column: 3;
-          grid-row: 1;
-        }
-
-        .promo-card {
-          grid-column: 3;
-          grid-row: 2;
-        }
-
-        .post-grid > article:nth-child(4) {
+        .featured-card:nth-child(3) {
           grid-column: 1;
         }
 
-        .post-grid > article:nth-child(5) {
+        .featured-card:nth-child(4) {
           grid-column: 2;
-        }
-
-        .about-strip,
-        .contact-strip {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
         }
 
         .site-nav {
           position: absolute;
-          right: clamp(22px, 3.5vw, 42px);
+          right: clamp(18px, 3vw, 32px);
           top: calc(100% + 1px);
           min-width: 260px;
           padding: 12px 0;
-          border: 1px solid var(--line);
-          background: var(--bg);
-          box-shadow: var(--shadow);
         }
 
         .site-nav a {
           padding: 14px 18px;
-          border-top: 0;
-          border-bottom: 1px solid var(--line);
-        }
-
-        .site-nav a:last-child { border-bottom: 0; }
-      }
-
-      @media (max-width: 899px) {
-        .site-header {
-          grid-template-columns: auto 1fr auto;
-        }
-
-        .brand img {
-          width: clamp(190px, 50vw, 240px);
-        }
-
-        .theme-toggle-label {
-          display: none;
         }
       }
     </style>
