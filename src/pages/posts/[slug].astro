@@ -26,17 +26,21 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="O que me tira o sono | P.H">
-        <img src={logo.src} alt="O que me tira o sono | P.H" />
-      </a>
+      <div class="header-inner">
+        <div class="header-spacer" aria-hidden="true"></div>
 
-      <div class="header-actions">
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span class="sr-only">Abrir menu</span>
-        </button>
+        <a class="brand" href="/" aria-label="O que me tira o sono | P.H">
+          <img src={logo.src} alt="O que me tira o sono | P.H" />
+        </a>
+
+        <div class="header-actions">
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span class="sr-only">Abrir menu</span>
+          </button>
+        </div>
       </div>
 
       <nav class="site-nav" id="site-menu" data-menu>
@@ -53,16 +57,21 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
     <script is:inline>
       const menuToggle = document.querySelector('[data-menu-toggle]');
       const menu = document.querySelector('[data-menu]');
+      const body = document.body;
 
       menuToggle.addEventListener('click', () => {
         const isOpen = menu.classList.toggle('open');
         menuToggle.setAttribute('aria-expanded', String(isOpen));
+        menuToggle.classList.toggle('open', isOpen);
+        body.classList.toggle('menu-open', isOpen);
       });
 
       menu.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', () => {
           menu.classList.remove('open');
           menuToggle.setAttribute('aria-expanded', 'false');
+          menuToggle.classList.remove('open');
+          body.classList.remove('menu-open');
         });
       });
     </script>
@@ -85,6 +94,10 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
         font-family: 'Montserrat', sans-serif;
         font-weight: 300;
         line-height: 1.5;
+      }
+
+      body.menu-open {
+        overflow: hidden;
       }
 
       :global(a),
@@ -113,16 +126,32 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
         position: sticky;
         top: 0;
         z-index: 20;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: 20px;
+        width: 100%;
         height: 60px;
-        padding: 0 clamp(18px, 3vw, 32px);
         background: var(--bg);
+        border-bottom: 0;
       }
 
-      .brand { display: inline-flex; width: fit-content; }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 60px;
+        padding: 0 36px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .header-spacer {
+        justify-self: start;
+      }
+
+      .brand {
+        justify-self: center;
+        display: inline-flex;
+        width: fit-content;
+      }
 
       .brand img {
         height: 48px;
@@ -149,40 +178,67 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
       }
 
       .menu-toggle {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 18px;
         justify-content: center;
         flex-direction: column;
-        gap: 5px;
+        gap: 4px;
+        position: relative;
+        z-index: 40;
       }
 
       .menu-toggle span:not(.sr-only) {
-        width: 26px;
+        width: 30px;
         height: 2px;
         background: var(--text);
         display: block;
+        transition: transform 180ms ease, opacity 180ms ease;
       }
 
       .site-nav {
-        grid-column: 1 / -1;
-        display: none;
+        position: fixed;
+        inset: 0;
+        display: flex;
         flex-direction: column;
-        gap: 0;
-        margin-top: 8px;
-        background: var(--bg);
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: rgba(255, 255, 255, 0.98);
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(1.01);
+        transition: opacity 180ms ease, transform 180ms ease;
+        z-index: 30;
       }
 
-      .site-nav.open { display: flex; }
+      .site-nav.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+
+      .site-nav.open a {
+        animation: menu-link-in 220ms ease both;
+      }
+
+      .site-nav.open a:nth-child(2) {
+        animation-delay: 40ms;
+      }
+
+      .site-nav.open a:nth-child(3) {
+        animation-delay: 80ms;
+      }
 
       .site-nav a {
-        padding: 14px 0;
-        font-size: 18px;
+        padding: 10px 0;
+        font-size: 28px;
         font-weight: 300;
         color: #000000;
+        letter-spacing: -0.03em;
       }
 
       .site-nav a:hover {
-        color: #6b7280;
+        color: #000000;
       }
 
       .post-page {
@@ -190,10 +246,11 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
       }
 
       :global(.post-hero) {
-        max-width: 1200px;
+        max-width: 900px;
         margin: 0 auto;
         display: grid;
         gap: 28px;
+        align-items: start;
       }
 
       :global(.post-intro) {
@@ -231,7 +288,9 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
       }
 
       :global(.post-visual) {
-        min-height: 420px;
+        width: 100%;
+        height: 400px;
+        min-height: 400px;
         border: 0;
         box-shadow: none;
         background: #f4f0ea;
@@ -245,7 +304,7 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
       }
 
       :global(.post-body) {
-        max-width: 760px;
+        max-width: 900px;
         margin: clamp(40px, 8vw, 72px) auto 0;
         text-align: center;
       }
@@ -271,27 +330,48 @@ const post = await keystaticReader.collections.blog.readOrThrow(Astro.params.slu
           min-height: 520px;
         }
 
-        .site-nav {
-          position: absolute;
-          right: clamp(18px, 3vw, 32px);
-          top: calc(100% + 1px);
-          min-width: 260px;
-          padding: 12px 0;
+        .site-nav a { }
+      }
+
+      @media (max-width: 899px) {
+        .header-inner {
+          padding: 0 36px;
         }
 
-        .site-nav a {
-          padding: 14px 18px;
-        }
+      }
+
+      .menu-toggle.open span:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+      }
+
+      .menu-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle.open span:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
       }
 
       body {
         font-size: 18px;
       }
 
+      @keyframes menu-link-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       p,
       li,
-      .post-body p,
-      .reading-time {
+      :global(.post-body p),
+      :global(.reading-time) {
         font-size: 18px;
       }
     </style>

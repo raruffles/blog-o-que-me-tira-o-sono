@@ -22,22 +22,37 @@ const posts = (await keystaticReader.collections.blog.all())
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="#home" aria-label="O que me tira o sono | P.H">
-        <img src={logo.src} alt="O que me tira o sono | P.H" />
-      </a>
+      <div class="header-inner">
+        <div class="header-spacer" aria-hidden="true"></div>
 
-      <div class="header-actions">
-        <label class="search-bar" aria-label="Buscar posts">
-          <span class="search-icon" aria-hidden="true">⌕</span>
-          <input class="search-input" type="search" placeholder="Buscar" data-search-input />
-        </label>
+        <a class="brand" href="#home" aria-label="O que me tira o sono | P.H">
+          <img src={logo.src} alt="O que me tira o sono | P.H" />
+        </a>
 
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span class="sr-only">Abrir menu</span>
-        </button>
+        <div class="header-actions">
+          <div class="search-group" style="position: relative; display: inline-flex; align-items: center;">
+            <button class="search-toggle" type="button" aria-label="Buscar posts" data-search-toggle style="width: 30px; height: 18px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+              <svg aria-hidden="true" viewBox="0 0 18 18" focusable="false" style="width: 20px; height: 20px; display: block;">
+                <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+                <path d="M11.8 11.8L16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path>
+              </svg>
+            </button>
+
+            <div class="search-panel" data-search-panel hidden style="position: absolute; top: 50%; right: calc(100% + 14px); transform: translateY(-50%); width: min(280px, calc(100vw - 220px)); z-index: 35;">
+              <label class="search-bar" aria-label="Buscar posts">
+                <span class="search-icon" aria-hidden="true">⌕</span>
+                <input class="search-input" type="search" placeholder="Buscar" data-search-input />
+              </label>
+            </div>
+          </div>
+
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span class="sr-only">Abrir menu</span>
+          </button>
+        </div>
       </div>
 
       <nav class="site-nav" id="site-menu" data-menu>
@@ -54,10 +69,13 @@ const posts = (await keystaticReader.collections.blog.all())
     </main>
 
     <script is:inline>
+      const searchToggle = document.querySelector('[data-search-toggle]');
+      const searchPanel = document.querySelector('[data-search-panel]');
+      const searchInput = document.querySelector('[data-search-input]');
       const menuToggle = document.querySelector('[data-menu-toggle]');
       const menu = document.querySelector('[data-menu]');
-      const searchInput = document.querySelector('[data-search-input]');
       const cards = document.querySelectorAll('[data-post-card]');
+      const body = document.body;
 
       const normalize = (value) =>
         value
@@ -74,17 +92,33 @@ const posts = (await keystaticReader.collections.blog.all())
         });
       };
 
+      searchToggle.addEventListener('click', () => {
+        const isOpen = !searchPanel.hidden;
+
+        searchPanel.hidden = isOpen;
+        if (!isOpen) {
+          searchInput.focus();
+        } else {
+          searchInput.value = '';
+          filterCards();
+        }
+      });
+
       searchInput.addEventListener('input', filterCards);
 
       menuToggle.addEventListener('click', () => {
         const isOpen = menu.classList.toggle('open');
         menuToggle.setAttribute('aria-expanded', String(isOpen));
+        menuToggle.classList.toggle('open', isOpen);
+        body.classList.toggle('menu-open', isOpen);
       });
 
       menu.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', () => {
           menu.classList.remove('open');
           menuToggle.setAttribute('aria-expanded', 'false');
+          menuToggle.classList.remove('open');
+          body.classList.remove('menu-open');
         });
       });
     </script>
@@ -110,6 +144,10 @@ const posts = (await keystaticReader.collections.blog.all())
         line-height: 1.5;
       }
 
+      body.menu-open {
+        overflow: hidden;
+      }
+
       :global(a),
       :global(a:visited),
       :global(a:hover),
@@ -123,7 +161,9 @@ const posts = (await keystaticReader.collections.blog.all())
       }
 
       p,
-      li {
+      li,
+      :global(.post-description),
+      :global(.card-date) {
         font-size: 18px;
       }
 
@@ -145,16 +185,31 @@ const posts = (await keystaticReader.collections.blog.all())
         position: sticky;
         top: 0;
         z-index: 20;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: 16px;
-        height: 64px;
-        padding: 8px clamp(18px, 3vw, 36px);
+        width: 100%;
+        padding: 8px 0 0;
         background: var(--bg);
       }
 
-      .brand { display: inline-flex; width: fit-content; }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 56px;
+        padding: 0 36px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .header-spacer {
+        justify-self: start;
+      }
+
+      .brand {
+        justify-self: center;
+        display: inline-flex;
+        width: fit-content;
+      }
 
       .brand img {
         height: 48px;
@@ -168,15 +223,52 @@ const posts = (await keystaticReader.collections.blog.all())
         gap: 14px;
       }
 
+      .search-group {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .search-toggle {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #000000;
+        width: 30px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .search-toggle svg {
+        width: 18px;
+        height: 18px;
+        display: block;
+      }
+
+      .search-panel {
+        position: absolute;
+        top: 50%;
+        right: calc(100% + 14px);
+        transform: translateY(-50%);
+        width: min(280px, calc(100vw - 220px));
+        z-index: 35;
+      }
+
       .search-bar {
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        min-width: 180px;
+        width: 100%;
+        max-width: 280px;
         padding: 0 14px;
         height: 40px;
-        border-radius: 999px;
-        background: rgba(0, 0, 0, 0.04);
+        border-radius: 0;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        background: #ffffff;
         color: #000000;
       }
 
@@ -198,7 +290,7 @@ const posts = (await keystaticReader.collections.blog.all())
       }
 
       .search-input::placeholder {
-        color: rgba(0, 0, 0, 0.48);
+        color: rgba(0, 0, 0, 0.4);
       }
 
       .menu-toggle {
@@ -214,40 +306,66 @@ const posts = (await keystaticReader.collections.blog.all())
       }
 
       .menu-toggle {
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        height: 18px;
         justify-content: center;
         flex-direction: column;
-        gap: 5px;
+        gap: 4px;
+        z-index: 40;
       }
 
       .menu-toggle span:not(.sr-only) {
-        width: 28px;
+        width: 30px;
         height: 2px;
         background: var(--text);
         display: block;
+        transition: transform 180ms ease, opacity 180ms ease;
       }
 
       .site-nav {
-        grid-column: 1 / -1;
-        display: none;
+        position: fixed;
+        inset: 0;
+        display: flex;
         flex-direction: column;
-        gap: 0;
-        margin-top: 6px;
-        background: var(--bg);
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: rgba(255, 255, 255, 0.98);
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(1.01);
+        transition: opacity 180ms ease, transform 180ms ease;
+        z-index: 30;
       }
 
-      .site-nav.open { display: flex; }
+      .site-nav.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+
+      .site-nav.open a {
+        animation: menu-link-in 220ms ease both;
+      }
+
+      .site-nav.open a:nth-child(2) {
+        animation-delay: 40ms;
+      }
+
+      .site-nav.open a:nth-child(3) {
+        animation-delay: 80ms;
+      }
 
       .site-nav a {
-        padding: 14px 0;
-        font-size: 18px;
+        padding: 10px 0;
+        font-size: 28px;
         font-weight: 300;
         color: #000000;
+        letter-spacing: -0.03em;
       }
 
       .site-nav a:hover {
-        color: #6b7280;
+        color: #000000;
       }
 
       .page-shell {
@@ -255,7 +373,7 @@ const posts = (await keystaticReader.collections.blog.all())
       }
 
       .home-layout {
-        max-width: 1480px;
+        max-width: 900px;
         margin: 0 auto;
       }
 
@@ -263,6 +381,7 @@ const posts = (await keystaticReader.collections.blog.all())
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 32px;
+        align-items: start;
       }
 
       :global(.featured-card) {
@@ -272,11 +391,13 @@ const posts = (await keystaticReader.collections.blog.all())
       :global(.card-link) {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
       }
 
       :global(.post-visual) {
         width: 100%;
+        height: 400px;
+        min-height: 400px;
         border: 0;
         box-shadow: none;
         position: relative;
@@ -290,10 +411,12 @@ const posts = (await keystaticReader.collections.blog.all())
         object-fit: cover;
       }
 
-      :global(.ratio-short) { aspect-ratio: 4 / 3; }
-      :global(.ratio-tall) { aspect-ratio: 4 / 5; }
-      :global(.ratio-wide) { aspect-ratio: 16 / 10; }
-      :global(.ratio-hero) { aspect-ratio: 5 / 6; }
+      :global(.ratio-short),
+      :global(.ratio-tall),
+      :global(.ratio-wide),
+      :global(.ratio-hero) {
+          aspect-ratio: auto; /* Maintain fixed height of images and remove aspect ratio variations */
+      }
 
       :global(.card-copy) {
         padding: 0 2px 0;
@@ -332,32 +455,22 @@ const posts = (await keystaticReader.collections.blog.all())
       }
 
       @media (min-width: 900px) {
-        .site-nav {
-          position: absolute;
-          right: clamp(18px, 3vw, 32px);
-          top: calc(100% + 1px);
-          min-width: 240px;
-          padding: 12px 0;
-        }
-
-        .site-nav a {
-          padding: 14px 18px;
-        }
-
         .search-bar {
-          min-width: 240px;
+          max-width: none;
         }
       }
 
       @media (max-width: 899px) {
-        .header-actions {
-          gap: 10px;
+        .header-inner {
+          padding: 0 36px;
+        }
+
+        .search-panel {
+          width: min(240px, calc(100vw - 184px));
         }
 
         .search-bar {
-          min-width: 0;
-          width: 140px;
-          padding-inline: 12px;
+          max-width: none;
         }
 
         .search-input::placeholder {
@@ -366,6 +479,49 @@ const posts = (await keystaticReader.collections.blog.all())
 
         :global(.post-grid) {
           grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .search-panel {
+          width: min(210px, calc(100vw - 152px));
+          right: calc(100% + 10px);
+        }
+      }
+
+      .menu-toggle.open span:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+      }
+
+      .menu-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle.open span:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+      }
+
+      @keyframes fade-up {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes menu-link-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
       }
     </style>
