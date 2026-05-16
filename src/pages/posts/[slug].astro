@@ -1,21 +1,30 @@
 ---
-import logo from '../logo.png';
-import { postList } from '../data/posts.js';
+import { posts } from '../../data/posts.js';
+
+export function getStaticPaths() {
+  return Object.entries(posts).map(([slug, post]) => ({
+    params: { slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
 ---
 <html lang="pt-BR" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="O que me tira o sono" />
-    <title>O que me tira o sono | P.H</title>
+    <title>{post.title} | O que me tira o sono</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="#home" aria-label="O que me tira o sono | P.H">
-        <img src={logo.src} alt="O que me tira o sono | P.H" />
+      <a class="brand" href="/" aria-label="O que me tira o sono | P.H">
+        <span class="brand-mark">O que me tira o sono</span>
+        <span class="brand-divider" aria-hidden="true"></span>
+        <span class="brand-signature">P.H</span>
       </a>
 
       <div class="header-actions">
@@ -35,89 +44,26 @@ import { postList } from '../data/posts.js';
       </div>
 
       <nav class="site-nav" id="site-menu" data-menu>
-        <a href="#home">Home</a>
-        <a href="#about">Sobre o blog</a>
-        <a href="#contact">Contato</a>
+        <a href="/">Home</a>
+        <a href="/#about">Sobre o blog</a>
+        <a href="/#contact">Contato</a>
       </nav>
     </header>
 
-    <main class="page-shell" id="home">
-      <section class="home-layout">
-        <div class="post-grid">
-          <article class="featured-card featured-card-large">
-            <a href={`/posts/${postList[0].slug}`} class="card-link">
-              <div class={`post-visual ${postList[0].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h1 class="post-title">{postList[0].title}</h1>
-                <p class="post-meta">{postList[0].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <article class="featured-card">
-            <a href={`/posts/${postList[1].slug}`} class="card-link">
-              <div class={`post-visual ${postList[1].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h2 class="post-title">{postList[1].title}</h2>
-                <p class="post-meta">{postList[1].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <article class="sidebar-card search-card">
-            <label class="search-field">
-              <span class="search-icon" aria-hidden="true">⌕</span>
-              <input type="search" placeholder="Pesquisar..." aria-label="Pesquisar posts" />
-            </label>
-          </article>
-
-          <article class="featured-card">
-            <a href={`/posts/${postList[2].slug}`} class="card-link">
-              <div class={`post-visual ${postList[2].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h2 class="post-title">{postList[2].title}</h2>
-                <p class="post-meta">{postList[2].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <article class="featured-card">
-            <a href={`/posts/${postList[3].slug}`} class="card-link">
-              <div class={`post-visual ${postList[3].color}`} aria-hidden="true"></div>
-              <div class="card-copy">
-                <h2 class="post-title">{postList[3].title}</h2>
-                <p class="post-meta">{postList[3].readTime}</p>
-              </div>
-            </a>
-          </article>
-
-          <aside class="sidebar-card promo-card">
-            <div class="promo-box">
-              <p class="promo-title">do depois</p>
-              <p class="promo-text">Crônicas escritas depois do dia, para ler com calma e sem pressa.</p>
-            </div>
-            <a class="promo-button" href="#contact">Quero ler o que vem depois!</a>
-          </aside>
+    <main class="post-page">
+      <section class="post-hero">
+        <div class="post-intro">
+          <span class="post-kicker">Crônica</span>
+          <h1>{post.title}</h1>
+          <p class="reading-time">{post.readTime}</p>
         </div>
 
-        <section class="about-strip" id="about">
-          <div>
-            <span class="section-label">Sobre o blog</span>
-            <h2>Escrita fina, silenciosa e centrada</h2>
-          </div>
-          <p>
-            Montserrat conduz o texto com 150% de altura de linha, enquanto os títulos usam Dosis em peso leve e tamanho limitado para manter a leitura limpa.
-          </p>
-        </section>
-
-        <section class="contact-strip" id="contact">
-          <div>
-            <span class="section-label">Contato</span>
-            <h2>Fale comigo por aqui</h2>
-          </div>
-          <a href="mailto:oi@oque-me-tira-o-sono.com">oi@oque-me-tira-o-sono.com</a>
-        </section>
+        <div class={`post-visual ${post.color}`} aria-hidden="true"></div>
       </section>
+
+      <article class="post-body">
+        {post.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      </article>
     </main>
 
     <script is:inline>
@@ -201,8 +147,6 @@ import { postList } from '../data/posts.js';
         text-decoration: none;
       }
 
-      img { display: block; max-width: 100%; }
-
       .sr-only {
         position: absolute;
         width: 1px;
@@ -231,12 +175,37 @@ import { postList } from '../data/posts.js';
 
       .brand {
         display: inline-flex;
-        width: fit-content;
+        align-items: center;
+        gap: 18px;
+        min-width: 0;
       }
 
-      .brand img {
-        width: clamp(220px, 22vw, 330px);
-        height: auto;
+      .brand-mark,
+      .brand-signature,
+      .post-kicker,
+      .section-label,
+      .site-nav a {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 300;
+        letter-spacing: 0.06em;
+      }
+
+      .brand-mark {
+        font-size: 1.95rem;
+        line-height: 1.5;
+        text-transform: uppercase;
+      }
+
+      .brand-divider {
+        width: 1px;
+        height: 54px;
+        background: var(--line);
+      }
+
+      .brand-signature {
+        font-size: 1.95rem;
+        line-height: 1.5;
+        text-transform: uppercase;
       }
 
       .header-actions {
@@ -326,42 +295,55 @@ import { postList } from '../data/posts.js';
         padding: 14px 0;
         border-top: 1px solid var(--line);
         font-size: 0.98rem;
-        font-weight: 500;
-        letter-spacing: 0.05em;
         text-transform: uppercase;
       }
 
-      .page-shell {
-        padding: clamp(26px, 4vw, 48px);
+      .post-page {
+        padding: clamp(24px, 4vw, 48px);
       }
 
-      .home-layout {
-        max-width: 1180px;
+      .post-hero {
+        max-width: 1200px;
         margin: 0 auto;
-      }
-
-      .post-grid {
         display: grid;
-        gap: 22px;
-        grid-template-columns: 1fr;
+        gap: 28px;
       }
 
-      .featured-card,
-      .sidebar-card {
-        min-width: 0;
+      .post-intro {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 320px;
+        padding: 32px 12px;
       }
 
-      .featured-card {
-        background: transparent;
+      .post-kicker {
+        font-size: 0.82rem;
+        color: var(--muted);
+        text-transform: uppercase;
       }
 
-      .card-link {
-        display: block;
+      .post-intro h1 {
+        margin: 18px 0 0;
+        font-family: 'Dosis', sans-serif;
+        font-size: clamp(2rem, 3.4vw, 2.25rem);
+        font-weight: 300;
+        line-height: 1.05;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        max-width: 36ch;
+      }
+
+      .reading-time {
+        margin: 18px 0 0;
+        font-size: 0.92rem;
+        color: var(--muted);
       }
 
       .post-visual {
-        width: 100%;
-        aspect-ratio: 4 / 5;
+        min-height: 420px;
         border: 1px solid var(--line);
         box-shadow: var(--shadow);
       }
@@ -390,179 +372,31 @@ import { postList } from '../data/posts.js';
           linear-gradient(155deg, #1a1411, #6b341c 42%, #d39a58 100%);
       }
 
-      .card-copy {
-        padding: 12px 4px 0;
-      }
-
-      .post-title {
-        margin: 0;
-        font-family: 'Dosis', sans-serif;
-        font-weight: 300;
-        letter-spacing: 0.03em;
-        line-height: 1.05;
-        font-size: clamp(2rem, 2.6vw, 2.25rem);
-        text-transform: uppercase;
-        max-width: 36ch;
-      }
-
-      .post-meta {
-        margin: 12px 0 0;
-        font-size: 0.9rem;
-        font-weight: 300;
-        color: var(--muted);
-      }
-
-      .search-card,
-      .promo-card,
-      .about-strip,
-      .contact-strip {
-        background: transparent;
-      }
-
-      .search-field {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        border: 1px solid var(--line);
-        background: var(--bg);
-      }
-
-      .search-field input {
-        flex: 1;
-        border: 0;
-        background: transparent;
-        outline: none;
-        font: inherit;
-        font-size: 0.96rem;
-        color: var(--text);
-      }
-
-      .search-icon {
-        font-size: 1.15rem;
-        color: var(--text);
-      }
-
-      .promo-box {
-        min-height: 230px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 14px;
-        padding: 22px;
-        background: var(--panel);
-        border: 1px solid var(--line);
+      .post-body {
+        max-width: 760px;
+        margin: clamp(40px, 8vw, 72px) auto 0;
         text-align: center;
       }
 
-      .promo-title {
+      .post-body p {
         margin: 0;
-        font-family: 'Dosis', sans-serif;
-        font-size: clamp(2rem, 3vw, 2.6rem);
-        font-weight: 300;
-        text-transform: lowercase;
-      }
-
-      .promo-text {
-        margin: 0;
-        font-size: 0.95rem;
-        color: var(--muted);
-      }
-
-      .promo-button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 52px;
-        margin-top: 14px;
-        padding: 12px 16px;
-        background: var(--accent);
-        color: var(--bg);
-        font-size: 0.88rem;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        text-align: center;
-      }
-
-      .about-strip,
-      .contact-strip {
-        margin-top: clamp(42px, 8vw, 72px);
-        display: grid;
-        gap: 18px;
-        align-items: end;
-      }
-
-      .section-label {
-        display: block;
-        margin-bottom: 10px;
-        font-size: 0.8rem;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      .about-strip h2,
-      .contact-strip h2 {
-        margin: 0;
-        font-family: 'Dosis', sans-serif;
-        font-size: clamp(2rem, 3vw, 2.75rem);
-        font-weight: 300;
-        line-height: 1.05;
-        letter-spacing: 0.02em;
-      }
-
-      .about-strip p {
-        margin: 0;
-        max-width: 720px;
         font-size: 1.125rem;
         line-height: 1.5;
         color: var(--muted);
       }
 
-      .contact-strip a {
-        width: fit-content;
-        padding-bottom: 2px;
-        border-bottom: 1px solid var(--line);
-        font-size: 1.1rem;
+      .post-body p + p {
+        margin-top: 28px;
       }
 
       @media (min-width: 900px) {
-        .post-grid {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 260px;
-          grid-auto-flow: dense;
-          align-items: start;
+        .post-hero {
+          grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.15fr);
+          align-items: center;
         }
 
-        .featured-card-large {
-          grid-column: 1;
-        }
-
-        .post-grid > article:nth-child(2) {
-          grid-column: 2;
-        }
-
-        .search-card {
-          grid-column: 3;
-          grid-row: 1;
-        }
-
-        .promo-card {
-          grid-column: 3;
-          grid-row: 2;
-        }
-
-        .post-grid > article:nth-child(4) {
-          grid-column: 1;
-        }
-
-        .post-grid > article:nth-child(5) {
-          grid-column: 2;
-        }
-
-        .about-strip,
-        .contact-strip {
-          grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+        .post-intro {
+          min-height: 520px;
         }
 
         .site-nav {
@@ -590,12 +424,26 @@ import { postList } from '../data/posts.js';
           grid-template-columns: auto 1fr auto;
         }
 
-        .brand img {
-          width: clamp(190px, 50vw, 240px);
+        .brand {
+          gap: 12px;
+        }
+
+        .brand-mark,
+        .brand-signature {
+          font-size: 1.1rem;
+          line-height: 1.5;
+        }
+
+        .brand-divider {
+          height: 42px;
         }
 
         .theme-toggle-label {
           display: none;
+        }
+
+        .post-visual {
+          min-height: 320px;
         }
       }
     </style>
