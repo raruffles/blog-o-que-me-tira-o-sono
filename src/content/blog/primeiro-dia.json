@@ -1,35 +1,13 @@
 {
   "title": "Primeiro dia",
-  "slug": {
-    "name": "Primeiro dia",
-    "slug": "primeiro-dia"
-  },
+  "slug": "primeiro-dia",
   "description": "Depois das férias, agora em uma escola nova. Francisco vinha contando os dias.",
   "pubDate": "2026-05-16",
+  "coverImage": "/images/blog/primeiro-dia.svg",
   "content": [
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Depois das férias, agora em uma escola nova. Francisco vinha contando os dias. Hoje, no escuro da madrugada, levantou duas vezes, guiado por uma ansiedade maior que ele. Pela manhã, cuidou de tudo com uma precisão quase ritual: organizou o material, conferiu a agenda que criamos juntos, separou o uniforme com a solenidade de quem sabe que os pequenos atos também são grandes." }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Fiquei observando. A alegria dele era tão simples, tão pura, que era impossível não me emocionar. Porque a felicidade de um filho faz a gente acreditar em milagres cotidianos." }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Me emocionei com as coisas pequenas, com aquilo que faz a vida parecer possível: rotinas, horários, expectativas." }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "A vida segue generosa. Não porque precise ser, mas porque, às vezes, apesar de tudo, ela simplesmente é. Basta olhar." }
-      ]
-    }
+    "Depois das férias, agora em uma escola nova. Francisco vinha contando os dias. Hoje, no escuro da madrugada, levantou duas vezes, guiado por uma ansiedade maior que ele. Pela manhã, cuidou de tudo com uma precisão quase ritual: organizou o material, conferiu a agenda que criamos juntos, separou o uniforme com a solenidade de quem sabe que os pequenos atos também são grandes.",
+    "Fiquei observando. A alegria dele era tão simples, tão pura, que era impossível não me emocionar. Porque a felicidade de um filho faz a gente acreditar em milagres cotidianos.",
+    "Me emocionei com as coisas pequenas, com aquilo que faz a vida parecer possível: rotinas, horários, expectativas.",
+    "A vida segue generosa. Não porque precise ser, mas porque, às vezes, apesar de tudo, ela simplesmente é. Basta olhar."
   ]
 }

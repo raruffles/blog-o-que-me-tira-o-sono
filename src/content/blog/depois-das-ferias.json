@@ -1,29 +1,12 @@
 {
   "title": "Depois das férias",
-  "slug": {
-    "name": "Depois das férias",
-    "slug": "depois-das-ferias"
-  },
+  "slug": "depois-das-ferias",
   "description": "Voltar é sempre um tipo de tradução. A rotina reaparece com sua gramática própria.",
   "pubDate": "2026-05-14",
+  "coverImage": "/images/blog/depois-das-ferias.svg",
   "content": [
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Voltar é sempre um tipo de tradução. A rotina reaparece com sua gramática própria e a casa aprende de novo os nossos passos." }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Tem algo de doce no recomeço quando ele chega sem alarde, só com a coragem de continuar." }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Escrever também é isso: reorganizar os dias para que eles caibam dentro de uma página." }
-      ]
-    }
+    "Voltar é sempre um tipo de tradução. A rotina reaparece com sua gramática própria e a casa aprende de novo os nossos passos.",
+    "Tem algo de doce no recomeço quando ele chega sem alarde, só com a coragem de continuar.",
+    "Escrever também é isso: reorganizar os dias para que eles caibam dentro de uma página."
   ]
 }

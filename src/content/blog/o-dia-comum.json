@@ -1,29 +1,12 @@
 {
   "title": "O dia comum",
-  "slug": {
-    "name": "O dia comum",
-    "slug": "o-dia-comum"
-  },
+  "slug": "o-dia-comum",
   "description": "Há dias em que tudo parece suspenso, como se o tempo estivesse apenas passando por dentro da casa.",
   "pubDate": "2026-05-15",
+  "coverImage": "/images/blog/o-dia-comum.svg",
   "content": [
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Há dias em que tudo parece suspenso, como se o tempo estivesse apenas passando por dentro da casa sem fazer barulho." }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "O comum também guarda beleza. A mesa posta, a janela aberta, o gesto que se repete e ainda assim parece novo." }
-      ]
-    },
-    {
-      "type": "paragraph",
-      "children": [
-        { "text": "Quando escrevo sobre o simples, eu tento preservar a delicadeza do que existe antes de virar lembrança." }
-      ]
-    }
+    "Há dias em que tudo parece suspenso, como se o tempo estivesse apenas passando por dentro da casa sem fazer barulho.",
+    "O comum também guarda beleza. A mesa posta, a janela aberta, o gesto que se repete e ainda assim parece novo.",
+    "Quando escrevo sobre o simples, eu tento preservar a delicadeza do que existe antes de virar lembrança."
   ]
 }

@@ -3,12 +3,14 @@ import logo from '../logo.png';
 import PostGrid from '../components/blog/PostGrid.jsx';
 import { keystaticReader } from '../lib/keystatic.ts';
 
-const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry }) => ({
-  slug,
-  ...entry,
-}));
+const posts = (await keystaticReader.collections.blog.all())
+  .map(({ slug, entry }) => ({
+    slug,
+    ...entry,
+  }))
+  .sort((left, right) => new Date(right.pubDate).getTime() - new Date(left.pubDate).getTime());
 ---
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,9 +27,10 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
       </a>
 
       <div class="header-actions">
-        <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Alternar tema" data-theme-toggle>
-          <span class="theme-toggle-label">Normal</span>
-        </button>
+        <label class="search-bar" aria-label="Buscar posts">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input class="search-input" type="search" placeholder="Buscar" data-search-input />
+        </label>
 
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
           <span></span>
@@ -51,30 +54,27 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
     </main>
 
     <script is:inline>
-      const root = document.documentElement;
-      const themeToggle = document.querySelector('[data-theme-toggle]');
       const menuToggle = document.querySelector('[data-menu-toggle]');
       const menu = document.querySelector('[data-menu]');
+      const searchInput = document.querySelector('[data-search-input]');
+      const cards = document.querySelectorAll('[data-post-card]');
 
-      const applyTheme = (theme) => {
-        root.dataset.theme = theme;
-        const isDark = theme === 'dark';
-        themeToggle.setAttribute('aria-pressed', String(isDark));
-        themeToggle.querySelector('.theme-toggle-label').textContent = isDark ? 'Dark' : 'Normal';
+      const normalize = (value) =>
+        value
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+      const filterCards = () => {
+        const query = normalize(searchInput.value.trim());
+
+        cards.forEach((card) => {
+          const haystack = normalize(card.getAttribute('data-search-text') || '');
+          card.hidden = Boolean(query) && !haystack.includes(query);
+        });
       };
 
-      const savedTheme = localStorage.getItem('blog-theme');
-      const initialTheme = savedTheme === 'dark' || savedTheme === 'light'
-        ? savedTheme
-        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-
-      applyTheme(initialTheme);
-
-      themeToggle.addEventListener('click', () => {
-        const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('blog-theme', nextTheme);
-        applyTheme(nextTheme);
-      });
+      searchInput.addEventListener('input', filterCards);
 
       menuToggle.addEventListener('click', () => {
         const isOpen = menu.classList.toggle('open');
@@ -92,24 +92,8 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
     <style>
       :root {
         --bg: #ffffff;
-        --panel: #f7f7f6;
         --text: #121212;
         --muted: #5f6268;
-        --line: rgba(18, 18, 18, 0.12);
-        --accent: #121212;
-        --accent-soft: rgba(18, 18, 18, 0.06);
-        --shadow: 0 18px 48px rgba(0, 0, 0, 0.08);
-      }
-
-      html[data-theme='dark'] {
-        --bg: #0c0d10;
-        --panel: #16191f;
-        --text: #f4f3ef;
-        --muted: #b3b6bd;
-        --line: rgba(255, 255, 255, 0.14);
-        --accent: #f4f3ef;
-        --accent-soft: rgba(255, 255, 255, 0.08);
-        --shadow: 0 20px 54px rgba(0, 0, 0, 0.28);
       }
 
       * { box-sizing: border-box; }
@@ -126,9 +110,16 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
         line-height: 1.5;
       }
 
-      a {
-        color: inherit;
+      :global(a),
+      :global(a:visited),
+      :global(a:hover),
+      :global(a:active) {
+        color: #000000;
         text-decoration: none;
+      }
+
+      :global(a:hover) {
+        opacity: 0.72;
       }
 
       p,
@@ -159,7 +150,7 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
         align-items: center;
         gap: 16px;
         height: 64px;
-        padding: 8px clamp(18px, 3vw, 32px);
+        padding: 8px clamp(18px, 3vw, 36px);
         background: var(--bg);
       }
 
@@ -174,10 +165,42 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
         justify-self: end;
         display: inline-flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
       }
 
-      .theme-toggle,
+      .search-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 180px;
+        padding: 0 14px;
+        height: 40px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.04);
+        color: #000000;
+      }
+
+      .search-icon {
+        font-size: 18px;
+        line-height: 1;
+        color: #000000;
+      }
+
+      .search-input {
+        width: 100%;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: #000000;
+        font: inherit;
+        font-size: 18px;
+        font-weight: 300;
+      }
+
+      .search-input::placeholder {
+        color: rgba(0, 0, 0, 0.48);
+      }
+
       .menu-toggle {
         appearance: none;
         border: 0;
@@ -188,11 +211,6 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
         gap: 10px;
         padding: 0;
         cursor: pointer;
-      }
-
-      .theme-toggle-label {
-        font-size: 18px;
-        font-weight: 300;
       }
 
       .menu-toggle {
@@ -215,7 +233,7 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
         display: none;
         flex-direction: column;
         gap: 0;
-        margin-top: 8px;
+        margin-top: 6px;
         background: var(--bg);
       }
 
@@ -233,115 +251,121 @@ const posts = (await keystaticReader.collections.posts.all()).map(({ slug, entry
       }
 
       .page-shell {
-        padding: clamp(24px, 4vw, 48px);
+        padding: clamp(24px, 4vw, 56px) clamp(18px, 3vw, 36px) 56px;
       }
 
       .home-layout {
-        max-width: 1180px;
+        max-width: 1480px;
         margin: 0 auto;
       }
 
-      .post-grid {
+      :global(.post-grid) {
         display: grid;
-        gap: 22px;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 32px;
       }
 
-      .featured-card {
+      :global(.featured-card) {
         min-width: 0;
       }
 
-      .card-link {
-        display: block;
+      :global(.card-link) {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
       }
 
-      .post-visual {
+      :global(.post-visual) {
         width: 100%;
-        aspect-ratio: 4 / 5;
         border: 0;
         box-shadow: none;
+        position: relative;
+        overflow: hidden;
+        background: #f4f0ea;
       }
 
-      .tone-forest {
-        background:
-          radial-gradient(circle at 30% 25%, rgba(197, 255, 125, 0.32), transparent 26%),
-          linear-gradient(155deg, #2f4f2d, #6e8d2f 34%, #201f15 70%, #3d281a 100%);
+      :global(.post-visual img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
 
-      .tone-sky {
-        background:
-          radial-gradient(circle at 60% 22%, rgba(255, 255, 255, 0.58), transparent 18%),
-          linear-gradient(160deg, #162437, #4e7097 40%, #d7b56b 100%);
+      :global(.ratio-short) { aspect-ratio: 4 / 3; }
+      :global(.ratio-tall) { aspect-ratio: 4 / 5; }
+      :global(.ratio-wide) { aspect-ratio: 16 / 10; }
+      :global(.ratio-hero) { aspect-ratio: 5 / 6; }
+
+      :global(.card-copy) {
+        padding: 0 2px 0;
       }
 
-      .tone-paper {
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.3)),
-          linear-gradient(160deg, #f4eee8, #e7e0da);
-      }
-
-      .tone-amber {
-        background:
-          radial-gradient(circle at 70% 30%, rgba(255, 211, 132, 0.24), transparent 26%),
-          linear-gradient(155deg, #1a1411, #6b341c 42%, #d39a58 100%);
-      }
-
-      .card-copy {
-        padding: 12px 2px 0;
-      }
-
-      .post-title {
-        margin: 0;
-        font-family: 'Dosis', sans-serif;
-        font-weight: 300;
-        letter-spacing: 0.03em;
-        line-height: 1.05;
-        font-size: clamp(2rem, 2.6vw, 2.25rem);
-        text-transform: uppercase;
-        max-width: 36ch;
-      }
-
-      .post-meta {
-        margin: 12px 0 0;
+      :global(.card-date) {
+        display: block;
+        margin: 0 0 10px;
         color: var(--muted);
+        font-size: 18px;
       }
 
-      .featured-card-large .post-title {
-        font-size: clamp(2.25rem, 3vw, 2.5rem);
+      :global(.post-title) {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 300;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        font-size: clamp(1.7rem, 2vw, 2.25rem);
+        max-width: 18ch;
+      }
+
+      :global(.post-description) {
+        margin: 10px 0 0;
+        color: var(--muted);
+        max-width: 34ch;
+      }
+
+      :global(.featured-card-large .post-title) {
+        font-size: clamp(2rem, 2.6vw, 2.8rem);
+        max-width: 14ch;
+      }
+
+      :global(.featured-card-large .post-visual) {
+        aspect-ratio: 5 / 6;
       }
 
       @media (min-width: 900px) {
-        .post-grid {
-          grid-template-columns: 1.2fr 1fr 260px;
-          align-items: start;
-        }
-
-        .featured-card:nth-child(1) {
-          grid-column: 1;
-        }
-
-        .featured-card:nth-child(2) {
-          grid-column: 2;
-        }
-
-        .featured-card:nth-child(3) {
-          grid-column: 1;
-        }
-
-        .featured-card:nth-child(4) {
-          grid-column: 2;
-        }
-
         .site-nav {
           position: absolute;
           right: clamp(18px, 3vw, 32px);
           top: calc(100% + 1px);
-          min-width: 260px;
+          min-width: 240px;
           padding: 12px 0;
         }
 
         .site-nav a {
           padding: 14px 18px;
+        }
+
+        .search-bar {
+          min-width: 240px;
+        }
+      }
+
+      @media (max-width: 899px) {
+        .header-actions {
+          gap: 10px;
+        }
+
+        .search-bar {
+          min-width: 0;
+          width: 140px;
+          padding-inline: 12px;
+        }
+
+        .search-input::placeholder {
+          color: transparent;
+        }
+
+        :global(.post-grid) {
+          grid-template-columns: 1fr;
         }
       }
     </style>
