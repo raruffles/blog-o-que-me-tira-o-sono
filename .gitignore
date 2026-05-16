@@ -1,0 +1,10 @@
+node_modules/
+.env
+.DS_Store
+dist/
+/.cache
+public/_astro
+package-lock.json
+npm-debug.log
+.vscode/
+.idea/
