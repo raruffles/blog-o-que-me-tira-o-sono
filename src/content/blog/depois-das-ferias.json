@@ -3,6 +3,7 @@
   "slug": "depois-das-ferias",
   "description": "Voltar é sempre um tipo de tradução. A rotina reaparece com sua gramática própria.",
   "pubDate": "2026-05-14",
+  "published": true,
   "coverImage": "/images/blog/depois-das-ferias.svg",
-  "categories": ["rotina"]
+  "categories": "rotina"
 }

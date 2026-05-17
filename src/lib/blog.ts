@@ -67,15 +67,25 @@ export async function getBlogPosts() {
   const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
   const posts = await keystaticReader.collections.blog.all();
 
-  return posts
+  // Only include posts marked as published in the site list
+  const publishedPosts = posts.filter(({ entry }) => Boolean(entry.published));
+
+  return publishedPosts
     .map(({ slug, entry }) => {
-      const categorySlugs = entry.categories ?? [];
+      const rawCategories = entry.categories ?? [];
+      const categorySlugs = Array.isArray(rawCategories)
+        ? rawCategories
+        : rawCategories
+        ? [rawCategories]
+        : [];
       const title = entry.title ?? '';
       const description = (entry.description ?? '').trim() || summarizeContent(entry.content, '');
+      const author = entry.author ?? 'P.H.';
 
       return {
         slug,
         ...entry,
+        author,
         title,
         description,
         categories: categorySlugs

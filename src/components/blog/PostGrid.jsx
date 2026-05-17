@@ -12,33 +12,7 @@ const formatDate = (pubDate) =>
 export default function PostGrid({ posts, pagination, baseHref }) {
   const mainPosts = posts;
 
-  const renderCategories = (categoryItems) =>
-    categoryItems?.length ? (
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-        {categoryItems.map((category) => (
-          <a
-            key={category.slug}
-            href={getCategoryHref(category.slug)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              padding: '4px 10px',
-              border: '1px solid rgba(0, 0, 0, 0.12)',
-              borderRadius: '999px',
-              fontSize: '18px',
-              lineHeight: 1,
-              letterSpacing: '0.02em',
-              textTransform: 'uppercase',
-              color: '#000000',
-              background: '#ffffff',
-              textDecoration: 'none',
-            }}
-          >
-            {category.title}
-          </a>
-        ))}
-      </div>
-    ) : null;
+  // Author/date row has been removed per design decision; title and description follow directly.
 
   const renderPagination = () => {
     if (!pagination || pagination.totalPages <= 1) {
@@ -136,18 +110,7 @@ export default function PostGrid({ posts, pagination, baseHref }) {
           </a>
         ) : null}
         <div className="card-copy">
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
-              {mainPosts[0]?.categories?.[0] ? (
-              <a href={getCategoryHref(mainPosts[0].categories[0].slug)} style={{ fontSize: '18px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em', textDecoration: 'none' }}>
-                {mainPosts[0].categories[0].title}
-              </a>
-            ) : (
-              <span style={{ fontSize: '12px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em' }} />
-            )}
-            <time className="card-date" dateTime={mainPosts[0]?.pubDate} style={{ color: '#5f6268' }}>
-              {formatDate(mainPosts[0]?.pubDate)}
-            </time>
-          </div>
+          {/* Removed author/date row — title follows directly */}
           <a href={`/posts/${mainPosts[0]?.slug ?? ''}`} className="card-link">
             <h1 className="post-title">{mainPosts[0]?.title}</h1>
             <p className="post-description">{mainPosts[0]?.description}</p>
@@ -165,18 +128,7 @@ export default function PostGrid({ posts, pagination, baseHref }) {
             </a>
           ) : null}
           <div className="card-copy">
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
-              {post.categories?.[0] ? (
-                <a href={getCategoryHref(post.categories[0].slug)} style={{ fontSize: '18px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em', textDecoration: 'none' }}>
-                  {post.categories[0].title}
-                </a>
-              ) : (
-                <span style={{ fontSize: '12px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em' }} />
-              )}
-              <time className="card-date" dateTime={post.pubDate} style={{ color: '#5f6268' }}>
-                {formatDate(post.pubDate)}
-              </time>
-            </div>
+              {/* Removed author/date row — title follows directly */}
             <a href={`/posts/${post.slug}`} className="card-link">
               <h2 className="post-title">{post.title}</h2>
               <p className="post-description">{post.description}</p>

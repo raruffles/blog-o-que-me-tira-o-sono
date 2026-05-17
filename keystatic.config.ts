@@ -65,15 +65,6 @@ export default config({
             generate: generateSlug,
           },
         }),
-        description: fields.text({
-          label: 'Resumo / Descrição (Opcional)',
-          description: 'Se deixar em branco, o site pegará o início do texto automaticamente.',
-          multiline: true,
-        }),
-        pubDate: fields.date({
-          label: 'Data de Publicação',
-          defaultValue: { kind: 'today' },
-        }),
         coverImage: fields.image({
           label: 'Imagem de Capa',
           directory: 'public/images/posts',
@@ -82,18 +73,32 @@ export default config({
             isRequired: false,
           },
         }),
-        categories: fields.array(
-          fields.relationship({
-            label: 'Categoria',
-            collection: 'categories',
-          }),
-          {
-            label: 'Categorias',
-          },
-        ),
         content: fields.markdoc({
           label: 'Conteúdo',
           description: 'Escreva com títulos, negrito, listas, imagens e links.',
+        }),
+        categories: fields.relationship({
+          label: 'Categoria',
+          collection: 'categories',
+        }),
+        description: fields.text({
+          label: 'Resumo / Descrição (Opcional)',
+          description: 'Se deixar em branco, o site pegará o início do texto automaticamente.',
+          multiline: true,
+        }),
+        author: fields.text({
+          label: 'Autor',
+          defaultValue: 'P.H.',
+          validation: { length: { max: 64 } },
+        }),
+        pubDate: fields.date({
+          label: 'Data de Publicação',
+          defaultValue: { kind: 'today' },
+        }),
+        published: fields.checkbox({
+          label: 'Publicado',
+          defaultValue: false,
+          description: 'Marque para publicar no site',
         }),
       },
     }),
