@@ -26,11 +26,11 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
   <body>
     <header class="site-header">
       <div class="header-inner">
-        <div class="header-spacer" aria-hidden="true"></div>
-
         <a class="brand" href="#home" aria-label="O que me tira o sono | P.H">
           <img src={logo.src} alt="O que me tira o sono | P.H" />
         </a>
+
+        <div class="header-spacer" aria-hidden="true"></div>
 
         <div class="header-actions">
           <div class="search-group" style="position: relative; display: inline-flex; align-items: center;">
@@ -57,7 +57,6 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
           </button>
         </div>
 
-        </a>
       </div>
 
       <nav class="site-nav" id="site-menu" data-menu>
@@ -211,7 +210,7 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
         height: 56px;
         padding: 0 36px;
         display: grid;
-        grid-template-columns: 1fr auto 1fr;
+        grid-template-columns: auto 1fr auto;
         align-items: center;
         gap: 16px;
       }
@@ -242,14 +241,15 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 32px;
-        margin-bottom: 20px;
+        margin-top: 0;
+        margin-bottom: 48px; /* distância para os posts */
       }
 
       .home-logo img {
-        width: 200px;
-        height: 200px;
+        width: 200px; /* largura fixa de 200px, altura automática */
+        height: auto;
         object-fit: contain;
+        display: block;
       }
 
       .search-group {
@@ -433,19 +433,19 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
 
       :global(.post-visual) {
         width: 100%;
-        height: 400px;
-        min-height: 400px;
         border: 0;
         box-shadow: none;
         position: relative;
         overflow: hidden;
         background: #f4f0ea;
+        aspect-ratio: 16 / 9; /* responsive height instead of fixed px */
       }
 
       :global(.post-visual img) {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        display: block;
       }
 
       :global(.ratio-short),
@@ -478,14 +478,15 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
         line-height: 1.5;
       }
 
+      :global(.post-title),
       :global(.featured-card-large .post-title) {
         font-size: 18px;
         font-weight: 700;
-        max-width: 14ch;
+        max-width: 18ch;
       }
 
-      :global(.featured-card-large .post-visual) {
-        aspect-ratio: 5 / 6;
+      :global(.post-description) {
+        min-height: 3em;
       }
 
       @media (min-width: 900px) {

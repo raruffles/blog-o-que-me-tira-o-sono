@@ -12,8 +12,6 @@ const formatDate = (pubDate) =>
 export default function PostGrid({ posts, pagination, baseHref }) {
   const mainPosts = posts;
 
-  // Author/date row has been removed per design decision; title and description follow directly.
-
   const renderPagination = () => {
     if (!pagination || pagination.totalPages <= 1) {
       return null;
@@ -101,10 +99,10 @@ export default function PostGrid({ posts, pagination, baseHref }) {
   return (
     <>
       <div className="post-grid">
-      <article className="featured-card featured-card-large" data-post-card data-search-text={`${mainPosts[0]?.title ?? ''} ${mainPosts[0]?.description ?? ''}`}>
+      <article className="featured-card" data-post-card data-search-text={`${mainPosts[0]?.title ?? ''} ${mainPosts[0]?.description ?? ''}`}>
         {mainPosts[0]?.coverImage ? (
           <a href={`/posts/${mainPosts[0]?.slug ?? ''}`} className="card-link">
-            <div className="post-visual ratio-hero" aria-hidden="true">
+            <div className="post-visual" aria-hidden="true">
               <img src={mainPosts[0].coverImage} alt="" loading="lazy" />
             </div>
           </a>
@@ -122,13 +120,12 @@ export default function PostGrid({ posts, pagination, baseHref }) {
         <article className="featured-card" key={post.slug} data-post-card data-search-text={`${post.title ?? ''} ${post.description ?? ''}`}>
           {post.coverImage ? (
             <a href={`/posts/${post.slug}`} className="card-link">
-              <div className={`post-visual ${['ratio-tall', 'ratio-short', 'ratio-wide'][index % 3] || 'ratio-tall'}`} aria-hidden="true">
+              <div className="post-visual" aria-hidden="true">
                 <img src={post.coverImage} alt="" loading="lazy" />
               </div>
             </a>
           ) : null}
           <div className="card-copy">
-              {/* Removed author/date row — title follows directly */}
             <a href={`/posts/${post.slug}`} className="card-link">
               <h2 className="post-title">{post.title}</h2>
               <p className="post-description">{post.description}</p>
