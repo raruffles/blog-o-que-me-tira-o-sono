@@ -1,5 +1,6 @@
 ---
 import logo from '../logo.png';
+import favicon from '../favicon.png';
 import PostGrid from '../components/blog/PostGrid.jsx';
 import { getBlogCategories, getBlogPosts, getCategoryHref, paginatePosts } from '../lib/blog.ts';
 
@@ -17,7 +18,7 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="O que me tira o sono" />
     <title>O que me tira o sono | P.H</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href={favicon.src} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -27,7 +28,7 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
       <div class="header-inner">
         <div class="header-spacer" aria-hidden="true"></div>
 
-        <a class="brand" href="#home" aria-label="O que me tira o sono | P.H">
+        <a class="brand" href="#home" aria-label="O que me tira o sono | P.H" style="justify-self: start;">
           <img src={logo.src} alt="O que me tira o sono | P.H" />
         </a>
 
