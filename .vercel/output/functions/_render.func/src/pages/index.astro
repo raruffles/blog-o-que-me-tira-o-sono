@@ -1,0 +1,564 @@
+---
+import logo from '../logo.png';
+import favicon from '../favicon.png';
+import PostGrid from '../components/blog/PostGrid.jsx';
+import { getBlogCategories, getBlogPosts, getCategoryHref, paginatePosts } from '../lib/blog.ts';
+
+const [allPosts, categories] = await Promise.all([getBlogPosts(), getBlogCategories()]);
+const selectedCategory = Astro.url.searchParams.get('category');
+const requestedPage = Number(Astro.url.searchParams.get('page') ?? '1');
+const filteredPosts = selectedCategory
+  ? allPosts.filter((post) => post.categories?.some((category) => category.slug === selectedCategory))
+  : allPosts;
+const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, requestedPage);
+---
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="O que me tira o sono" />
+    <title>O que me tira o sono | P.H</title>
+    <link rel="icon" type="image/png" href={favicon.src} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#home" aria-label="O que me tira o sono | P.H">
+          <img src={logo.src} alt="O que me tira o sono | P.H" />
+        </a>
+
+        <div class="header-spacer" aria-hidden="true"></div>
+
+        <div class="header-actions">
+          <div class="search-group" style="position: relative; display: inline-flex; align-items: center;">
+            <button class="search-toggle" type="button" aria-label="Buscar posts" data-search-toggle style="width: 30px; height: 18px; display: inline-flex; align-items: center; justify-content: center; padding: 0;">
+              <svg aria-hidden="true" viewBox="0 0 18 18" focusable="false" style="width: 20px; height: 20px; display: block;">
+                <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+                <path d="M11.8 11.8L16 16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"></path>
+              </svg>
+            </button>
+
+            <div class="search-panel" data-search-panel hidden style="position: absolute; top: 50%; right: calc(100% + 14px); transform: translateY(-50%); width: min(280px, calc(100vw - 220px)); z-index: 35;">
+              <label class="search-bar" aria-label="Buscar posts">
+                <span class="search-icon" aria-hidden="true">⌕</span>
+                <input class="search-input" type="search" placeholder="Buscar" data-search-input />
+              </label>
+            </div>
+          </div>
+
+          <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" data-menu-toggle>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span class="sr-only">Abrir menu</span>
+          </button>
+        </div>
+
+      </div>
+
+      <nav class="site-nav" id="site-menu" data-menu>
+        <a href="#home">Home</a>
+        <a href="#about">Sobre o blog</a>
+        <a href="#contact">Contato</a>
+        <a href="/categorias">Categorias</a>
+      </nav>
+    </header>
+
+    <main class="page-shell" id="home">
+      <section class="home-layout">
+        <div class="home-logo" aria-hidden="true">
+          <img src={logo.src} alt="O que me tira o sono | P.H" />
+        </div>
+        <PostGrid posts={posts} pagination={{ currentPage, totalPages }} />
+      </section>
+    </main>
+
+    <script is:inline>
+      const searchToggle = document.querySelector('[data-search-toggle]');
+      const searchPanel = document.querySelector('[data-search-panel]');
+      const searchInput = document.querySelector('[data-search-input]');
+      const menuToggle = document.querySelector('[data-menu-toggle]');
+      const menu = document.querySelector('[data-menu]');
+      const cards = document.querySelectorAll('[data-post-card]');
+      const body = document.body;
+      const initialCategory = new URLSearchParams(window.location.search).get('category');
+
+      const normalize = (value) =>
+        value
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+      const filterCards = () => {
+        const query = normalize(searchInput.value.trim());
+
+        cards.forEach((card) => {
+          const haystack = normalize(card.getAttribute('data-search-text') || '');
+          card.hidden = Boolean(query) && !haystack.includes(query);
+        });
+      };
+
+      searchToggle.addEventListener('click', () => {
+        const isOpen = !searchPanel.hidden;
+
+        searchPanel.hidden = isOpen;
+        if (!isOpen) {
+          searchInput.focus();
+        } else {
+          searchInput.value = '';
+          filterCards();
+        }
+      });
+
+      searchInput.addEventListener('input', filterCards);
+
+      if (initialCategory) {
+        searchInput.value = '';
+        filterCards();
+      }
+
+      menuToggle.addEventListener('click', () => {
+        const isOpen = menu.classList.toggle('open');
+        menuToggle.setAttribute('aria-expanded', String(isOpen));
+        menuToggle.classList.toggle('open', isOpen);
+        body.classList.toggle('menu-open', isOpen);
+      });
+
+      menu.querySelectorAll('a').forEach((link) => {
+        link.addEventListener('click', () => {
+          menu.classList.remove('open');
+          menuToggle.setAttribute('aria-expanded', 'false');
+          menuToggle.classList.remove('open');
+          body.classList.remove('menu-open');
+        });
+      });
+    </script>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #121212;
+        --muted: #5f6268;
+      }
+
+      * { box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 18px;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+
+      body.menu-open {
+        overflow: hidden;
+      }
+
+      :global(a),
+      :global(a:visited),
+      :global(a:hover),
+      :global(a:active) {
+        color: #000000;
+        text-decoration: none;
+      }
+
+      :global(a:hover) {
+        opacity: 0.72;
+      }
+
+      p,
+      li,
+      :global(.post-description),
+      :global(.card-date) {
+        font-size: 18px;
+      }
+
+      img { display: block; max-width: 100%; }
+
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        width: 100%;
+        padding: 8px 0 0;
+        background: var(--bg);
+      }
+
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 56px;
+        padding: 0 36px;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .header-spacer {
+        justify-self: start;
+      }
+
+      .brand {
+        justify-self: start;
+        display: inline-flex;
+        width: fit-content;
+      }
+
+      .brand img {
+        height: 48px;
+        width: auto;
+      }
+
+      .header-actions {
+        justify-self: end;
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .home-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 0;
+        margin-bottom: 48px; /* distância para os posts */
+      }
+
+      .home-logo img {
+        width: 200px; /* largura fixa de 200px, altura automática */
+        height: auto;
+        object-fit: contain;
+        display: block;
+      }
+
+      .search-group {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .search-toggle {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: #000000;
+        width: 30px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .search-toggle svg {
+        width: 18px;
+        height: 18px;
+        display: block;
+      }
+
+      .search-panel {
+        position: absolute;
+        top: 50%;
+        right: calc(100% + 14px);
+        transform: translateY(-50%);
+        width: min(280px, calc(100vw - 220px));
+        z-index: 35;
+      }
+
+      .search-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        max-width: 280px;
+        padding: 0 14px;
+        height: 40px;
+        border-radius: 0;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .search-icon {
+        font-size: 18px;
+        line-height: 1;
+        color: #000000;
+      }
+
+      .search-input {
+        width: 100%;
+        border: 0;
+        outline: none;
+        background: transparent;
+        color: #000000;
+        font: inherit;
+        font-size: 18px;
+        font-weight: 300;
+      }
+
+      .search-input::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+
+      .menu-toggle {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0;
+        cursor: pointer;
+      }
+
+      .menu-toggle {
+        width: 30px;
+        height: 18px;
+        justify-content: center;
+        flex-direction: column;
+        gap: 4px;
+        z-index: 40;
+      }
+
+      .menu-toggle span:not(.sr-only) {
+        width: 30px;
+        height: 2px;
+        background: var(--text);
+        display: block;
+        transition: transform 180ms ease, opacity 180ms ease;
+      }
+
+      .site-nav {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: rgba(255, 255, 255, 0.98);
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(1.01);
+        transition: opacity 180ms ease, transform 180ms ease;
+        z-index: 30;
+      }
+
+      .site-nav.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1);
+      }
+
+      .site-nav.open a {
+        animation: menu-link-in 220ms ease both;
+      }
+
+      .site-nav.open a:nth-child(2) {
+        animation-delay: 40ms;
+      }
+
+      .site-nav.open a:nth-child(3) {
+        animation-delay: 80ms;
+      }
+
+      .site-nav a {
+        padding: 10px 0;
+        font-size: 28px;
+        font-weight: 300;
+        color: #000000;
+        letter-spacing: -0.03em;
+      }
+
+      .site-nav a:hover {
+        color: #000000;
+      }
+
+      .menu-section {
+        margin-top: 10px;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #5f6268;
+      }
+
+      .page-shell {
+        padding: clamp(24px, 4vw, 56px) clamp(18px, 3vw, 36px) 56px;
+      }
+
+      .home-layout {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      :global(.post-grid) {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 32px;
+        align-items: start;
+      }
+
+      :global(.featured-card) {
+        min-width: 0;
+      }
+
+      :global(.card-link) {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      :global(.post-visual) {
+        width: 100%;
+        border: 0;
+        box-shadow: none;
+        position: relative;
+        overflow: hidden;
+        background: #f4f0ea;
+        aspect-ratio: 16 / 9; /* responsive height instead of fixed px */
+      }
+
+      :global(.post-visual img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      :global(.ratio-short),
+      :global(.ratio-tall),
+      :global(.ratio-wide),
+      :global(.ratio-hero) {
+          aspect-ratio: auto; /* Maintain fixed height of images and remove aspect ratio variations */
+      }
+
+      :global(.card-copy) {
+        padding: 8px 2px 0; /* ensure 8px between image and title */
+      }
+
+      /* Date removed from UI */
+
+      :global(.post-title) {
+        margin: 0;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        font-size: 18px;
+        max-width: 18ch;
+      }
+
+      :global(.post-description) {
+        margin: 0;
+        color: var(--muted);
+        max-width: 34ch;
+        line-height: 1.5;
+      }
+
+      :global(.post-title),
+      :global(.featured-card-large .post-title) {
+        font-size: 18px;
+        font-weight: 700;
+        max-width: 18ch;
+      }
+
+      :global(.post-description) {
+        min-height: 3em;
+      }
+
+      @media (min-width: 900px) {
+        .search-bar {
+          max-width: none;
+        }
+      }
+
+      @media (max-width: 899px) {
+        .header-inner {
+          padding: 0 36px;
+        }
+
+        .search-panel {
+          width: min(240px, calc(100vw - 184px));
+        }
+
+        .search-bar {
+          max-width: none;
+        }
+
+        .search-input::placeholder {
+          color: transparent;
+        }
+
+        :global(.post-grid) {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .search-panel {
+          width: min(210px, calc(100vw - 152px));
+          right: calc(100% + 10px);
+        }
+      }
+
+      .menu-toggle.open span:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+      }
+
+      .menu-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle.open span:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+      }
+
+      @keyframes fade-up {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes menu-link-in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </body>
+</html>

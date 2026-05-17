@@ -2,6 +2,7 @@
   "dependencies": {
     "@astrojs/node": "^10.1.1",
     "@astrojs/react": "^5.0.5",
+    "@astrojs/vercel": "^10.0.7",
     "@keystatic/astro": "^5.0.6",
     "@keystatic/core": "^0.5.50",
     "@tailwindcss/vite": "^4.3.0",
@@ -22,4 +23,3 @@
     "vite": "^7.3.3"
   }
 }
-
