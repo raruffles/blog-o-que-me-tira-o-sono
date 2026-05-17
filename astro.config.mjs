@@ -1,21 +1,15 @@
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel';
 import react from '@astrojs/react';
+import tailwind from '@astrojs/tailwind';
 import keystatic from '@keystatic/astro';
+import vercel from '@astrojs/vercel/serverless'; // <- Adicionando a importação do adaptador
 
-function keystaticAdminOverrides() {
-	return {
-		name: 'keystatic-admin-overrides',
-		hooks: {
-			'astro:config:setup': ({ injectScript }) => {
-				injectScript('page', 'import "/src/keystatic-admin-overrides.js";');
-			},
-		},
-	};
-}
-// https://astro.build/config
 export default defineConfig({
-	output: 'server',
-	adapter: vercel(),
-	integrations: [react(), keystatic(), keystaticAdminOverrides()],
+  output: 'server', // <- ESSA É A LINHA QUE CURA O ERRO 500
+  adapter: vercel(), // <- Conectando o adaptador aqui
+  integrations: [
+    react(), 
+    tailwind(), 
+    keystatic()
+  ],
 });
