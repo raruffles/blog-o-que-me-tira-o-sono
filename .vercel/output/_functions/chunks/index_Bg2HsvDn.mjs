@@ -1,7 +1,7 @@
 import { c as createComponent } from './astro-component_CqlBJNLj.mjs';
 import 'piccolore';
 import { b7 as renderTemplate, a5 as addAttribute, b3 as renderHead } from './params-and-props_BFTGYDEv.mjs';
-import { r as renderComponent } from './entrypoint_CHUKqlNf.mjs';
+import { r as renderComponent } from './entrypoint_hIJd1fQ5.mjs';
 import { a as getBlogPosts, g as getBlogCategories, p as paginatePosts, f as favicon } from './favicon_CJ7dLDxZ.mjs';
 import { P as PostGrid } from './PostGrid_Crr3z5hD.mjs';
 
