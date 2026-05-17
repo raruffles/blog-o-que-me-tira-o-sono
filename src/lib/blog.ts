@@ -54,9 +54,9 @@ export function getPageHref(page) {
     return '/';
   }
 
-  return `/?page=${page}`;
+  return `/page/${page}`;
 }
 
 export function getCategoryHref(slug) {
-  return `/?category=${slug}`;
+  return `/categorias/${slug}`;
 }
