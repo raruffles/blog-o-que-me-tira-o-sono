@@ -1,3 +1,5 @@
+import { getCategoryHref } from '../../lib/blog.ts';
+
 const formatDate = (pubDate) =>
   pubDate
     ? new Intl.DateTimeFormat('pt-BR', {
@@ -17,8 +19,9 @@ export default function PostArticle({ post }) {
           {categoryItems.length ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '8px' }}>
               {categoryItems.map((category) => (
-                <span
+                <a
                   key={category.slug}
+                  href={getCategoryHref(category.slug)}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -32,10 +35,11 @@ export default function PostArticle({ post }) {
                     color: '#000000',
                     background: '#ffffff',
                     marginBottom: '4px',
+                    textDecoration: 'none',
                   }}
                 >
                   {category.title}
-                </span>
+                </a>
               ))}
             </div>
           ) : null}

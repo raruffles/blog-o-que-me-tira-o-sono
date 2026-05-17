@@ -9,7 +9,7 @@ const formatDate = (pubDate) =>
       }).format(new Date(pubDate))
     : '';
 
-export default function PostGrid({ posts, pagination }) {
+export default function PostGrid({ posts, pagination, baseHref }) {
   const mainPosts = posts;
 
   const renderCategories = (categoryItems) =>
@@ -47,6 +47,14 @@ export default function PostGrid({ posts, pagination }) {
 
     const pageNumbers = Array.from({ length: pagination.totalPages }, (_, index) => index + 1);
 
+    const hrefFor = (p) => {
+      if (baseHref) {
+        if (p <= 1) return `${baseHref}`;
+        return `${baseHref.replace(/\/$/, '')}/page/${p}`;
+      }
+      return getPageHref(p);
+    };
+
     return (
       <nav
         aria-label="Paginação"
@@ -60,7 +68,7 @@ export default function PostGrid({ posts, pagination }) {
         }}
       >
         <a
-          href={getPageHref(pagination.currentPage - 1)}
+          href={hrefFor(pagination.currentPage - 1)}
           aria-disabled={pagination.currentPage === 1}
           style={{
             padding: '8px 14px',
@@ -76,7 +84,7 @@ export default function PostGrid({ posts, pagination }) {
         {pageNumbers.map((pageNumber) => (
           <a
             key={pageNumber}
-            href={getPageHref(pageNumber)}
+            href={hrefFor(pageNumber)}
             aria-current={pageNumber === pagination.currentPage ? 'page' : undefined}
             style={{
               padding: '8px 12px',
@@ -92,7 +100,7 @@ export default function PostGrid({ posts, pagination }) {
         ))}
 
         <a
-          href={getPageHref(pagination.currentPage + 1)}
+          href={hrefFor(pagination.currentPage + 1)}
           aria-disabled={pagination.currentPage === pagination.totalPages}
           style={{
             padding: '8px 14px',

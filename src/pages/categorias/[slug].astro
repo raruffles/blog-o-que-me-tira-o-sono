@@ -1,5 +1,6 @@
 ---
 import PostGrid from '../../components/blog/PostGrid.jsx';
+import favicon from '../../favicon.png';
 import { getBlogPosts, paginatePosts, POSTS_PER_PAGE } from '../../lib/blog.ts';
 
 const slug = Astro.params.slug;
@@ -15,12 +16,12 @@ const category = (await (await import(`../../lib/blog.ts`)).getBlogCategories())
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{category.title} | Categorias | O que me tira o sono</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href={favicon.src} />
   </head>
   <body>
     <main class="page-shell" style="max-width:900px;margin:48px auto;padding:0 20px;">
       <h1>{category.title}</h1>
-      <PostGrid posts={posts} pagination={{ currentPage, totalPages }} />
+      <PostGrid posts={posts} pagination={{ currentPage, totalPages }} baseHref={`/categorias/${slug}`} />
     </main>
   </body>
 </html>
