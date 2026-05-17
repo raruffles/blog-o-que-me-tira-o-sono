@@ -56,6 +56,8 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
             <span class="sr-only">Abrir menu</span>
           </button>
         </div>
+
+        </a>
       </div>
 
       <nav class="site-nav" id="site-menu" data-menu>
@@ -68,6 +70,9 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
 
     <main class="page-shell" id="home">
       <section class="home-layout">
+        <div class="home-logo" aria-hidden="true">
+          <img src={logo.src} alt="O que me tira o sono | P.H" />
+        </div>
         <PostGrid posts={posts} pagination={{ currentPage, totalPages }} />
       </section>
     </main>
@@ -216,7 +221,7 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
       }
 
       .brand {
-        justify-self: center;
+        justify-self: start;
         display: inline-flex;
         width: fit-content;
       }
@@ -231,6 +236,20 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
         display: inline-flex;
         align-items: center;
         gap: 14px;
+      }
+
+      .home-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 32px;
+        margin-bottom: 20px;
+      }
+
+      .home-logo img {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
       }
 
       .search-group {
@@ -409,7 +428,7 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
       :global(.card-link) {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
       }
 
       :global(.post-visual) {
@@ -437,7 +456,7 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
       }
 
       :global(.card-copy) {
-        padding: 0 2px 0;
+        padding: 8px 2px 0; /* ensure 8px between image and title */
       }
 
       /* Date removed from UI */
@@ -453,7 +472,7 @@ const { items: posts, currentPage, totalPages } = paginatePosts(filteredPosts, r
       }
 
       :global(.post-description) {
-        margin: 1.5em 0 0;
+        margin: 0;
         color: var(--muted);
         max-width: 34ch;
         line-height: 1.5;

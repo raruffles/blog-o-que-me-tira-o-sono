@@ -10,6 +10,9 @@ const generateSlug = (name: string) =>
     .replace(/^-+|-+$/g, '');
 
 export default config({
+  // No secret configured — allow local Keystatic UI to operate without additional
+  // authentication when using local storage. For production, add a secret or
+  // enable GitHub-backed storage.
   storage: { kind: 'local' },
   collections: {
     categories: collection({
