@@ -25,7 +25,7 @@ export default function PostGrid({ posts, pagination, baseHref }) {
               padding: '4px 10px',
               border: '1px solid rgba(0, 0, 0, 0.12)',
               borderRadius: '999px',
-              fontSize: '12px',
+              fontSize: '18px',
               lineHeight: 1,
               letterSpacing: '0.02em',
               textTransform: 'uppercase',
@@ -135,8 +135,8 @@ export default function PostGrid({ posts, pagination, baseHref }) {
         </a>
         <div className="card-copy">
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
-            {mainPosts[0]?.categories?.[0] ? (
-              <a href={getCategoryHref(mainPosts[0].categories[0].slug)} style={{ fontSize: '12px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em', textDecoration: 'none' }}>
+              {mainPosts[0]?.categories?.[0] ? (
+              <a href={getCategoryHref(mainPosts[0].categories[0].slug)} style={{ fontSize: '18px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em', textDecoration: 'none' }}>
                 {mainPosts[0].categories[0].title}
               </a>
             ) : (
@@ -163,7 +163,7 @@ export default function PostGrid({ posts, pagination, baseHref }) {
           <div className="card-copy">
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
               {post.categories?.[0] ? (
-                <a href={getCategoryHref(post.categories[0].slug)} style={{ fontSize: '12px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em', textDecoration: 'none' }}>
+                <a href={getCategoryHref(post.categories[0].slug)} style={{ fontSize: '18px', color: '#5f6268', textTransform: 'uppercase', letterSpacing: '0.06em', textDecoration: 'none' }}>
                   {post.categories[0].title}
                 </a>
               ) : (

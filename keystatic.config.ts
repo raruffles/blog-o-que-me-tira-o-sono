@@ -92,11 +92,9 @@ export default config({
             },
           },
         ),
-        content: fields.array(fields.text({ label: 'Parágrafo', multiline: true }), {
-          label: 'Parágrafos',
-          validation: {
-            length: { min: 1 },
-          },
+        content: fields.markdoc({
+          label: 'Conteúdo',
+          description: 'Escreva com títulos, negrito, listas, imagens e links.',
         }),
       },
     }),

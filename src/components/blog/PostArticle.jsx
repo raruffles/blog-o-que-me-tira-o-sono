@@ -1,3 +1,5 @@
+import Markdoc from '@markdoc/markdoc';
+import React from 'react';
 import { getCategoryHref } from '../../lib/blog.ts';
 
 const formatDate = (pubDate) =>
@@ -11,6 +13,18 @@ const formatDate = (pubDate) =>
 
 export default function PostArticle({ post }) {
   const categoryItems = post.categories ?? [];
+  const contentNode = post.content?.node ?? post.content;
+
+  const renderedContent = contentNode
+    ? Markdoc.renderers.react(
+        Markdoc.transform(
+          typeof contentNode === 'string'
+            ? Markdoc.parse(contentNode)
+            : contentNode,
+        ),
+        React,
+      )
+    : null;
 
   return (
     <>
@@ -56,11 +70,7 @@ export default function PostArticle({ post }) {
         </div>
       </section>
 
-      <article className="post-body">
-        {post.content.map((paragraph, index) => (
-          <p key={`${post.slug ?? 'post'}-${index}`}>{paragraph}</p>
-        ))}
-      </article>
+      <article className="post-body">{renderedContent}</article>
     </>
   );
 }

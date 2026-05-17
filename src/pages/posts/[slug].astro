@@ -323,18 +323,90 @@ if (!post) {
       :global(.post-body) {
         max-width: 900px;
         margin: clamp(40px, 8vw, 72px) auto 0;
-        text-align: center;
+        text-align: left;
+      }
+
+      :global(.post-body > * + *) {
+        margin-top: 24px;
+      }
+
+      :global(.post-body h2) {
+        margin: 40px 0 12px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400;
+        font-size: clamp(1.45rem, 2.2vw, 2rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      :global(.post-body h3) {
+        margin: 32px 0 10px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400;
+        font-size: clamp(1.2rem, 1.8vw, 1.5rem);
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+        color: var(--text);
       }
 
       :global(.post-body p) {
         margin: 0;
         font-size: 18px;
-        line-height: 1.5;
+        line-height: 1.7;
         color: var(--muted);
       }
 
-      :global(.post-body p + p) {
-        margin-top: 28px;
+      :global(.post-body ul),
+      :global(.post-body ol) {
+        margin: 0;
+        padding-left: 1.35rem;
+        color: var(--muted);
+      }
+
+      :global(.post-body li + li) {
+        margin-top: 8px;
+      }
+
+      :global(.post-body blockquote) {
+        margin: 0;
+        padding: 18px 20px;
+        border-left: 3px solid rgba(0, 0, 0, 0.14);
+        background: rgba(0, 0, 0, 0.03);
+        color: var(--text);
+        font-style: italic;
+      }
+
+      :global(.post-body a) {
+        text-decoration: underline;
+        text-underline-offset: 0.18em;
+      }
+
+      :global(.post-body img) {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+
+      :global(.post-body code) {
+        padding: 0.12em 0.35em;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.05);
+        font-size: 0.95em;
+      }
+
+      :global(.post-body pre) {
+        overflow: auto;
+        padding: 16px 18px;
+        border-radius: 10px;
+        background: #111111;
+        color: #f5f5f5;
+      }
+
+      :global(.post-body pre code) {
+        padding: 0;
+        background: transparent;
+        color: inherit;
       }
 
       @media (min-width: 900px) {
