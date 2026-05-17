@@ -66,19 +66,21 @@ export default config({
           },
         }),
         description: fields.text({
-          label: 'Resumo / Descrição',
+          label: 'Resumo / Descrição (Opcional)',
+          description: 'Se deixar em branco, o site pegará o início do texto automaticamente.',
           multiline: true,
-          validation: {
-            length: { max: 220 },
-          },
         }),
         pubDate: fields.date({
           label: 'Data de Publicação',
+          defaultValue: { kind: 'today' },
         }),
         coverImage: fields.image({
-          label: 'Imagem de capa',
-          directory: 'public/images/blog',
-          publicPath: '/images/blog',
+          label: 'Imagem de Capa',
+          directory: 'public/images/posts',
+          publicPath: '/images/posts/',
+          validation: {
+            isRequired: false,
+          },
         }),
         categories: fields.array(
           fields.relationship({
@@ -87,9 +89,6 @@ export default config({
           }),
           {
             label: 'Categorias',
-            validation: {
-              length: { min: 1 },
-            },
           },
         ),
         content: fields.markdoc({

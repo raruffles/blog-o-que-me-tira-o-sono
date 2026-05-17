@@ -128,11 +128,13 @@ export default function PostGrid({ posts, pagination, baseHref }) {
     <>
       <div className="post-grid">
       <article className="featured-card featured-card-large" data-post-card data-search-text={`${mainPosts[0]?.title ?? ''} ${mainPosts[0]?.description ?? ''}`}>
-        <a href={`/posts/${mainPosts[0]?.slug ?? ''}`} className="card-link">
-          <div className="post-visual ratio-hero" aria-hidden="true">
-            <img src={mainPosts[0]?.coverImage} alt="" loading="lazy" />
-          </div>
-        </a>
+        {mainPosts[0]?.coverImage ? (
+          <a href={`/posts/${mainPosts[0]?.slug ?? ''}`} className="card-link">
+            <div className="post-visual ratio-hero" aria-hidden="true">
+              <img src={mainPosts[0].coverImage} alt="" loading="lazy" />
+            </div>
+          </a>
+        ) : null}
         <div className="card-copy">
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
               {mainPosts[0]?.categories?.[0] ? (
@@ -155,11 +157,13 @@ export default function PostGrid({ posts, pagination, baseHref }) {
 
       {mainPosts.slice(1).map((post, index) => (
         <article className="featured-card" key={post.slug} data-post-card data-search-text={`${post.title ?? ''} ${post.description ?? ''}`}>
-          <a href={`/posts/${post.slug}`} className="card-link">
-            <div className={`post-visual ${['ratio-tall', 'ratio-short', 'ratio-wide'][index % 3] || 'ratio-tall'}`} aria-hidden="true">
-              <img src={post.coverImage} alt="" loading="lazy" />
-            </div>
-          </a>
+          {post.coverImage ? (
+            <a href={`/posts/${post.slug}`} className="card-link">
+              <div className={`post-visual ${['ratio-tall', 'ratio-short', 'ratio-wide'][index % 3] || 'ratio-tall'}`} aria-hidden="true">
+                <img src={post.coverImage} alt="" loading="lazy" />
+              </div>
+            </a>
+          ) : null}
           <div className="card-copy">
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
               {post.categories?.[0] ? (

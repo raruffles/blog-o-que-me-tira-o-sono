@@ -5,6 +5,52 @@ export const POSTS_PER_PAGE = 4;
 const sortByDateDesc = (left, right) =>
   new Date(right.pubDate).getTime() - new Date(left.pubDate).getTime();
 
+function extractTextFromMarkdoc(value) {
+  const root = value?.node ?? value;
+
+  if (typeof root === 'string') {
+    return root;
+  }
+
+  const parts = [];
+
+  const visit = (node) => {
+    if (!node || typeof node !== 'object') {
+      return;
+    }
+
+    if (node.type === 'text') {
+      const text = node.attributes?.content ?? node.content ?? '';
+
+      if (typeof text === 'string' && text.trim()) {
+        parts.push(text);
+      }
+    }
+
+    if (Array.isArray(node.children)) {
+      node.children.forEach(visit);
+    }
+
+    if (node.slots && typeof node.slots === 'object') {
+      Object.values(node.slots).forEach(visit);
+    }
+  };
+
+  visit(root);
+
+  return parts.join(' ').replace(/\s+/g, ' ').trim();
+}
+
+function summarizeContent(content, fallback = '') {
+  const text = extractTextFromMarkdoc(content);
+
+  if (!text) {
+    return fallback;
+  }
+
+  return text.length > 220 ? `${text.slice(0, 217).trimEnd()}...` : text;
+}
+
 export async function getBlogCategories() {
   const categories = await keystaticReader.collections.categories.all();
 
@@ -24,10 +70,14 @@ export async function getBlogPosts() {
   return posts
     .map(({ slug, entry }) => {
       const categorySlugs = entry.categories ?? [];
+      const title = entry.title ?? '';
+      const description = (entry.description ?? '').trim() || summarizeContent(entry.content, '');
 
       return {
         slug,
         ...entry,
+        title,
+        description,
         categories: categorySlugs
           .map((categorySlug) => categoryBySlug.get(categorySlug))
           .filter(Boolean),

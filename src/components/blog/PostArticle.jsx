@@ -65,9 +65,11 @@ export default function PostArticle({ post }) {
           <p className="post-summary">{post.description}</p>
         </div>
 
-        <div className="post-visual ratio-hero" aria-hidden="true">
-          <img src={post.coverImage} alt="" loading="lazy" />
-        </div>
+        {post.coverImage ? (
+          <div className="post-visual ratio-hero" aria-hidden="true">
+            <img src={post.coverImage} alt="" loading="lazy" />
+          </div>
+        ) : null}
       </section>
 
       <article className="post-body">{renderedContent}</article>
