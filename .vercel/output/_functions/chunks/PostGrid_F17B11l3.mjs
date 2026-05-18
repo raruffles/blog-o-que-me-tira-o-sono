@@ -1,5 +1,5 @@
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
-import { c as getPageHref } from './favicon_CJ7dLDxZ.mjs';
+import { c as getPageHref } from './favicon_lRGJ7iN7.mjs';
 
 function PostGrid({ posts, pagination, baseHref }) {
   const mainPosts = posts;

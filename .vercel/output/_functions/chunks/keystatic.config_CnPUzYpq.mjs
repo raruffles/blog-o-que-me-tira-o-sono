@@ -2,10 +2,13 @@ import { config, collection, fields } from '@keystatic/core';
 
 const generateSlug = (name) => name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const keystaticConfig = config({
-  // No secret configured — allow local Keystatic UI to operate without additional
-  // authentication when using local storage. For production, add a secret or
-  // enable GitHub-backed storage.
-  storage: { kind: "local" },
+  storage: {
+    kind: "github",
+    repo: {
+      owner: "raruffles",
+      name: "blog-o-que-me-tira-o-sono"
+    }
+  },
   collections: {
     categories: collection({
       label: "Categorias",

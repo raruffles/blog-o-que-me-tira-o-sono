@@ -2,7 +2,7 @@ import { c as createComponent } from './astro-component_CqlBJNLj.mjs';
 import 'piccolore';
 import { a5 as addAttribute, b3 as renderHead, b7 as renderTemplate } from './params-and-props_BFTGYDEv.mjs';
 import 'clsx';
-import { g as getBlogCategories, f as favicon } from './favicon_CJ7dLDxZ.mjs';
+import { g as getBlogCategories, f as favicon } from './favicon_lRGJ7iN7.mjs';
 
 const $$Categorias = createComponent(async ($$result, $$props, $$slots) => {
   const categories = await getBlogCategories();

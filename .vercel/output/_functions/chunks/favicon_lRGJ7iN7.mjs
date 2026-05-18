@@ -1,6 +1,6 @@
 import { createReader } from '@keystatic/core/reader';
 import { fileURLToPath } from 'node:url';
-import { k as keystaticConfig } from './keystatic.config_j4WWGL40.mjs';
+import { k as keystaticConfig } from './keystatic.config_CnPUzYpq.mjs';
 
 const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
 const keystaticReader = createReader(projectRoot, keystaticConfig);
