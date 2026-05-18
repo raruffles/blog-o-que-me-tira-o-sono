@@ -4,6 +4,8 @@ import favicon from '../favicon.png';
 import PostGrid from '../components/blog/PostGrid.jsx';
 import { getBlogCategories, getBlogPosts, getCategoryHref, paginatePosts } from '../lib/blog.ts';
 
+export const prerender = true;
+
 const [allPosts, categories] = await Promise.all([getBlogPosts(), getBlogCategories()]);
 const selectedCategory = Astro.url.searchParams.get('category');
 const requestedPage = Number(Astro.url.searchParams.get('page') ?? '1');

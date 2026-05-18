@@ -3,6 +3,17 @@ import PostGrid from '../../components/blog/PostGrid.jsx';
 import { getBlogPosts, paginatePosts, POSTS_PER_PAGE } from '../../lib/blog.ts';
 import favicon from '../../favicon.png';
 
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const allPosts = await getBlogPosts();
+  const totalPages = Math.max(1, Math.ceil(allPosts.length / POSTS_PER_PAGE));
+
+  return Array.from({ length: totalPages }, (_, index) => ({
+    params: { n: String(index + 1) },
+  }));
+}
+
 const pageNum = Number(Astro.params.n ?? '1');
 const allPosts = await getBlogPosts();
 const { items: posts, currentPage, totalPages } = paginatePosts(allPosts, pageNum, POSTS_PER_PAGE);

@@ -1,7 +1,17 @@
 ---
 import PostGrid from '../../components/blog/PostGrid.jsx';
 import favicon from '../../favicon.png';
-import { getBlogPosts, paginatePosts, POSTS_PER_PAGE } from '../../lib/blog.ts';
+import { getBlogCategories, getBlogPosts, paginatePosts, POSTS_PER_PAGE } from '../../lib/blog.ts';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const categories = await getBlogCategories();
+
+  return categories.map((category) => ({
+    params: { slug: category.slug },
+  }));
+}
 
 const slug = Astro.params.slug;
 const page = Number(Astro.url.searchParams.get('page') ?? '1');

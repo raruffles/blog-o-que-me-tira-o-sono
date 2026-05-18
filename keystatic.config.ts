@@ -9,7 +9,7 @@ const generateSlug = (name: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+const isProduction = process.env.VERCEL === '1';
 
 export default config({
   storage: isProduction

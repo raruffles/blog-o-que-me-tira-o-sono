@@ -2,6 +2,8 @@
 import { getBlogCategories } from '../lib/blog.ts';
 import favicon from '../favicon.png';
 
+export const prerender = true;
+
 const categories = await getBlogCategories();
 ---
 <html lang="pt-BR">
