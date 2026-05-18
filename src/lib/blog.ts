@@ -1,3 +1,5 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { keystaticReader } from './keystatic.ts';
 
 export const POSTS_PER_PAGE = 4;
@@ -51,6 +53,16 @@ function summarizeContent(content, fallback = '') {
   return text.length > 220 ? `${text.slice(0, 217).trimEnd()}...` : text;
 }
 
+async function readBlogContent(slug) {
+  const contentPath = path.join(process.cwd(), 'src', 'content', 'blog', `${slug}.mdoc`);
+
+  try {
+    return await fs.readFile(contentPath, 'utf8');
+  } catch {
+    return '';
+  }
+}
+
 export async function getBlogCategories() {
   const categories = await keystaticReader.collections.categories.all();
 
@@ -70,8 +82,9 @@ export async function getBlogPosts() {
   // Only include posts marked as published in the site list
   const publishedPosts = posts.filter(({ entry }) => Boolean(entry.published));
 
-  return publishedPosts
-    .map(({ slug, entry }) => {
+  return Promise.all(
+    publishedPosts.map(async ({ slug, entry }) => {
+      const content = await readBlogContent(slug);
       const rawCategories = entry.categories ?? [];
       const categorySlugs = Array.isArray(rawCategories)
         ? rawCategories
@@ -79,12 +92,13 @@ export async function getBlogPosts() {
         ? [rawCategories]
         : [];
       const title = entry.title ?? '';
-      const description = (entry.description ?? '').trim() || summarizeContent(entry.content, '');
+      const description = (entry.description ?? '').trim() || summarizeContent(content, '');
       const author = entry.author ?? 'P.H.';
 
       return {
         slug,
         ...entry,
+        content,
         author,
         title,
         description,
@@ -92,8 +106,8 @@ export async function getBlogPosts() {
           .map((categorySlug) => categoryBySlug.get(categorySlug))
           .filter(Boolean),
       };
-    })
-    .sort(sortByDateDesc);
+    }),
+  ).then((resolvedPosts) => resolvedPosts.sort(sortByDateDesc));
 }
 
 export function paginatePosts(posts, page, perPage = POSTS_PER_PAGE) {

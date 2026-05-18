@@ -1,4 +1,3 @@
-import Markdoc from '@markdoc/markdoc';
 import React from 'react';
 import { getCategoryHref } from '../../lib/blog.ts';
 
@@ -13,18 +12,11 @@ const formatDate = (pubDate) =>
 
 export default function PostArticle({ post }) {
   const categoryItems = post.categories ?? [];
-  const contentNode = post.content?.node ?? post.content;
-
-  const renderedContent = contentNode
-    ? Markdoc.renderers.react(
-        Markdoc.transform(
-          typeof contentNode === 'string'
-            ? Markdoc.parse(contentNode)
-            : contentNode,
-        ),
-        React,
-      )
-    : null;
+  const contentText = typeof post.content === 'string' ? post.content : '';
+  const contentBlocks = contentText
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean);
 
   return (
     <>
@@ -72,7 +64,18 @@ export default function PostArticle({ post }) {
         ) : null}
       </section>
 
-      <article className="post-body">{renderedContent}</article>
+      <article className="post-body">
+        {contentBlocks.map((block, index) => (
+          <p key={index}>
+            {block.split('\n').map((line, lineIndex) => (
+              <React.Fragment key={lineIndex}>
+                {line}
+                {lineIndex < block.split('\n').length - 1 ? <br /> : null}
+              </React.Fragment>
+            ))}
+          </p>
+        ))}
+      </article>
     </>
   );
 }

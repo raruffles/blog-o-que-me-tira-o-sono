@@ -15,10 +15,10 @@
     "tailwindcss": "^4.3.0"
   },
   "scripts": {
-    "dev": "astro dev --host 127.0.0.1 --port 4323",
-    "start": "astro dev --host 127.0.0.1 --port 4323",
+    "dev": "astro dev --host 127.0.0.1 --port 4321 --strictPort",
+    "start": "astro dev --host 127.0.0.1 --port 4321 --strictPort",
     "build": "astro build",
-    "preview": "astro preview --host 127.0.0.1 --port 4324"
+    "preview": "astro preview --host 127.0.0.1 --port 4322 --strictPort"
   },
   "devDependencies": {
     "vite": "^7.3.3"
