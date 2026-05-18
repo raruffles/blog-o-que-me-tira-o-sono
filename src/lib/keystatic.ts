@@ -1,6 +1,5 @@
 import { createReader } from '@keystatic/core/reader';
 import keystaticConfig from '../../keystatic.config.ts';
-
-const projectRoot = process.cwd();
+import { projectRoot } from './project-root.ts';
 
 export const keystaticReader = createReader(projectRoot, keystaticConfig);

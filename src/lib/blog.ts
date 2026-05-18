@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { keystaticReader } from './keystatic.ts';
+import { projectRoot } from './project-root.ts';
 
 export const POSTS_PER_PAGE = 4;
 
@@ -54,7 +54,7 @@ function summarizeContent(content, fallback = '') {
 }
 
 async function readBlogContent(slug) {
-  const contentPath = path.join(process.cwd(), 'src', 'content', 'blog', `${slug}.mdoc`);
+  const contentPath = path.join(projectRoot, 'src', 'content', 'blog', `${slug}.mdoc`);
 
   try {
     return await fs.readFile(contentPath, 'utf8');
@@ -63,8 +63,32 @@ async function readBlogContent(slug) {
   }
 }
 
+async function readJsonCollectionEntries(collectionPath) {
+  try {
+    const filenames = await fs.readdir(collectionPath);
+    const jsonFiles = filenames.filter((filename) => filename.endsWith('.json'));
+
+    return Promise.all(
+      jsonFiles.map(async (filename) => {
+        const fullPath = path.join(collectionPath, filename);
+        const fileContents = await fs.readFile(fullPath, 'utf8');
+        const entry = JSON.parse(fileContents);
+        const slug = entry.slug ?? path.basename(filename, '.json');
+
+        return {
+          slug,
+          entry,
+        };
+      }),
+    );
+  } catch {
+    return [];
+  }
+}
+
 export async function getBlogCategories() {
-  const categories = await keystaticReader.collections.categories.all();
+  const categoriesPath = path.join(projectRoot, 'src', 'content', 'categories');
+  const categories = await readJsonCollectionEntries(categoriesPath);
 
   return categories
     .map(({ slug, entry }) => ({
@@ -77,7 +101,8 @@ export async function getBlogCategories() {
 export async function getBlogPosts() {
   const categories = await getBlogCategories();
   const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
-  const posts = await keystaticReader.collections.blog.all();
+  const postsPath = path.join(projectRoot, 'src', 'content', 'blog');
+  const posts = await readJsonCollectionEntries(postsPath);
 
   // Only include posts marked as published in the site list
   const publishedPosts = posts.filter(({ entry }) => Boolean(entry.published));
@@ -108,6 +133,12 @@ export async function getBlogPosts() {
       };
     }),
   ).then((resolvedPosts) => resolvedPosts.sort(sortByDateDesc));
+}
+
+export async function getBlogPostSlugs() {
+  const posts = await getBlogPosts();
+
+  return posts.map((post) => post.slug);
 }
 
 export function paginatePosts(posts, page, perPage = POSTS_PER_PAGE) {

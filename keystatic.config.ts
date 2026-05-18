@@ -9,12 +9,29 @@ const generateSlug = (name: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
-const isProduction = process.env.VERCEL === '1';
+const requiredProdEnv = [
+  'KEYSTATIC_SECRET',
+  'KEYSTATIC_GITHUB_CLIENT_ID',
+  'KEYSTATIC_GITHUB_CLIENT_SECRET',
+  'PUBLIC_KEYSTATIC_GITHUB_APP_SLUG',
+];
+
+const hasAllProdEnv = requiredProdEnv.every((k) => Boolean(process.env[k]));
+const isRunningOnVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV === 'production';
+
+if (isRunningOnVercel && !hasAllProdEnv) {
+  throw new Error(
+    `Keystatic production configuration requires these env vars: ${requiredProdEnv.join(', ')}. Set them in Vercel project settings.`
+  );
+}
+
+const isProduction = isRunningOnVercel && hasAllProdEnv;
 
 export default config({
   storage: isProduction
     ? {
         kind: 'github',
+        branchPrefix: 'keystatic/',
         repo: {
           owner: 'raruffles',
           name: 'blog-o-que-me-tira-o-sono',

@@ -2,13 +2,12 @@
 import logo from '../../logo.png';
 import favicon from '../../favicon.png';
 import PostArticle from '../../components/blog/PostArticle.jsx';
-import { getBlogCategories, getBlogPosts, getCategoryHref } from '../../lib/blog.ts';
-import { keystaticReader } from '../../lib/keystatic.ts';
+import { getBlogCategories, getBlogPosts, getCategoryHref, getBlogPostSlugs } from '../../lib/blog.ts';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-  const slugs = await keystaticReader.collections.blog.list();
+  const slugs = await getBlogPostSlugs();
 
   return slugs.map((slug) => ({
     params: { slug },
