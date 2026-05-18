@@ -9,14 +9,18 @@ const generateSlug = (name: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
+const isProduction = process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
+
 export default config({
-  storage: {
-    kind: 'github',
-    repo: {
-      owner: 'raruffles',
-      name: 'blog-o-que-me-tira-o-sono',
-    },
-  },
+  storage: isProduction
+    ? {
+        kind: 'github',
+        repo: {
+          owner: 'raruffles',
+          name: 'blog-o-que-me-tira-o-sono',
+        },
+      }
+    : { kind: 'local' },
   collections: {
     categories: collection({
       label: 'Categorias',
